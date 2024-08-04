@@ -16,7 +16,8 @@ urlpatterns = [
     path('update/<int:pk>/', ProductUpdateView.as_view(), name='product-update'),
     path('delete/<int:pk>/', ProductDeleteView.as_view(), name='product-delete'),
     path('detail/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
-    
+    path('product-approval/<int:pk>/', ProductApprovalUpdateView.as_view(), name='product-approval'),
+
     
 
 ]

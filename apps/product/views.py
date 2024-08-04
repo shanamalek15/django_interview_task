@@ -5,8 +5,9 @@ from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from .models import Category, Product
-from .forms import CategoryForm, ProductForm
+from .forms import *
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 
 # Category Views
 class CategoryListView(LoginRequiredMixin, ListView):
@@ -19,6 +20,11 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
     form_class = CategoryForm
     template_name = 'category_form.html'
     success_url = reverse_lazy('product:category-list')
+    
+    
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
 
 class CategoryUpdateView(LoginRequiredMixin, UpdateView):
     model = Category
@@ -78,3 +84,18 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
     template_name = 'product_detail.html'
     context_object_name = 'product'
+    
+class ProductApprovalUpdateView(UpdateView):
+    model = Product
+    form_class = ProductApprovalForm
+    template_name = 'product_approval_update.html'
+    success_url = reverse_lazy('product:product-list')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        status = form.cleaned_data['status']
+        if status == 'approved':
+            messages.success(self.request, f'Product "{self.object.title}" has been approved.')
+        elif status == 'rejected':
+            messages.success(self.request, f'Product "{self.object.title}" has been rejected.')
+        return response

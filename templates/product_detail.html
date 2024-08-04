@@ -22,14 +22,18 @@
             <p class="card-text"><strong>Updated At:</strong> {{ product.updated_at }}</p>
             <p class="card-text"><strong>Created By:</strong> {{ product.created_by.username }}</p>
             <p class="card-text"><strong>Description:</strong> {{ product.description }}</p>
-            <p class="card-text"><strong>Video:</strong> 
-                {% if product.video %}
-                    <a href="{{ product.video.url }}" target="_blank" class="btn btn-primary">View Video</a>
-                {% else %}
-                    No Video
-                {% endif %}
-            </p>
-            <a href="{% url 'product:product-list' %}" class="btn btn-secondary">Back to Product List</a>
+            <p class="card-text"><strong>Video:</strong></p>
+            {% if product.video %}
+                <div class="embed-responsive embed-responsive-16by9">
+                    <video controls class="embed-responsive-item" width="25%" height="25%">
+                        <source src="{{ product.video.url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            {% else %}
+                <p>No Video</p>
+            {% endif %}
+            <a href="{% url 'product:product-list' %}" class="btn btn-secondary mt-3">Back to Product List</a>
         </div>
     </div>
 </div>

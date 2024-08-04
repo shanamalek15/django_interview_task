@@ -10,3 +10,17 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['category', 'title', 'description', 'price', 'status', 'video']
+
+
+class ProductApprovalForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['status']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['status'].choices = [
+            ('draft', 'Draft'),
+            ('approved', 'Approved'),
+            ('rejected', 'Rejected'),
+        ]

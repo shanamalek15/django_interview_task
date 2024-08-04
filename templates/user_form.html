@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+<link href="{% static 'css/sign_up.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<div class="container-login100">
+    <div class="wrap-login100 p-t-50 p-b-90">
+        <form class="login100-form validate-form flex-sb flex-w" method="post">
+            {% csrf_token %}
+            <span class="login100-form-title mb-3">
+                {% if form.instance.pk %}
+                    Update User
+                {% else %}
+                    Create User
+                {% endif %}
+            </span>
+
+            <!-- Email Field -->
+            <div class="wrap-input100 validate-input mb-3">
+                <input class="input100" type="email" name="email" placeholder="Email" value="{{ form.email.value|default:'' }}">
+                <span class="focus-input100"></span>
+                {% if form.email.errors %}
+                    <div class="text-danger">
+                        {{ form.email.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Role Field -->
+            <div class="wrap-input100 validate-input mb-3">
+                <select class="input100" name="role">
+                    <option value="admin" {% if form.role.value == 'admin' %}selected{% endif %}>Admin</option>
+                    <option value="staff" {% if form.role.value == 'staff' %}selected{% endif %}>Staff</option>
+                    <option value="agent" {% if form.role.value == 'agent' %}selected{% endif %}>Agent</option>
+                </select>
+                <span class="focus-input100"></span>
+                {% if form.role.errors %}
+                    <div class="text-danger">
+                        {{ form.role.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- First Name Field -->
+            <div class="wrap-input100 validate-input mb-3">
+                <input class="input100" type="text" name="first_name" placeholder="First Name" value="{{ form.first_name.value|default:'' }}">
+                <span class="focus-input100"></span>
+                {% if form.first_name.errors %}
+                    <div class="text-danger">
+                        {{ form.first_name.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Last Name Field -->
+            <div class="wrap-input100 validate-input mb-3">
+                <input class="input100" type="text" name="last_name" placeholder="Last Name" value="{{ form.last_name.value|default:'' }}">
+                <span class="focus-input100"></span>
+                {% if form.last_name.errors %}
+                    <div class="text-danger">
+                        {{ form.last_name.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Password Field -->
+            <div class="wrap-input100 validate-input mb-3">
+                <input class="input100" type="password" name="password" placeholder="Password" value="{{ form.password.value|default:'' }}" {% if form.fields.password.widget.attrs.readonly %}readonly{% endif %}>
+                <span class="focus-input100"></span>
+                {% if form.password.errors %}
+                    <div class="text-danger">
+                        {{ form.password.errors }}
+                    </div>
+                {% endif %}
+                {% if form.fields.password.help_text %}
+                    <small class="form-text text-muted">{{ form.fields.password.help_text }}</small>
+                {% endif %}
+            </div>
+
+            <div class="container-login100-form-btn m-t-17">
+                <button class="login100-form-btn" type="submit">
+                    {% if form.instance.pk %}
+                        Update
+                    {% else %}
+                        Create
+                    {% endif %}
+                </button>
+                <a href="{% url 'authentication:user-list' %}" class="login100-form-btn">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

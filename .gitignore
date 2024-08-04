@@ -5,3 +5,8 @@ venv/
 
 *.sqlite3
 
+apps/product/migrations/
+apps/user_auth/migrations/
+
+# Ignore media folder
+media/

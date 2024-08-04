@@ -75,6 +75,9 @@
                                     <a href="{% url 'product:product-detail' product.id %}">View</a>
                                     <a href="{% url 'product:product-update' product.id %}">Edit</a>
                                     <a href="{% url 'product:product-delete' product.id %}" >Delete</a>
+                                    {% if product.status == 'draft' %}
+                                    <a href="{% url 'product:product-approval' product.id %}" >Approve</a>
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% endfor %}

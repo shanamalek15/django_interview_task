@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+<link href="{% static '/css/sign_up.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4 align-items-center justify-content-between">
+    <div class="col-auto">
+        <h1 class="app-page-title mb-0">Users</h1>
+    </div>
+    <div class="col-auto">
+        <div class="page-utilities">
+            <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
+                <div class="col-auto">
+                    <a type="button" class="btn btn-primary" href="{% url 'authentication:user-create' %}"
+                        data-bs-target="#clerkCaseRegisterModel">
+                        <i class="fa fa-user-plus" aria-hidden="true"></i>
+                        New User
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="tab-content" id="users-table-tab-content">
+    <div class="tab-pane fade show active" id="users-all" role="tabpanel" aria-labelledby="users-all-tab">
+        <div class="app-card app-card-orders-table shadow-sm mb-5">
+            <div class="app-card-body">
+                <div class="table-responsive">
+                    <table class="table app-table-hover mb-0 text-left">
+                        <thead>
+                            <tr>
+                                <th class="cell">Email</th>
+                                <th class="cell">Role</th>
+                                <th class="cell">First Name</th>
+                                <th class="cell">Last Name</th>
+                                <th class="cell text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td class="cell">{{ user.email }}</td>
+                                <td class="cell">{{ user.role }}</td>
+                                <td class="cell">{{ user.first_name }}</td>
+                                <td class="cell">{{ user.last_name }}</td>
+                                <td class="cell text-center">
+                                    <a href="{% url 'authentication:user-update' user.pk %}">Edit</a>
+                                    <a href="{% url 'authentication:user-delete' user.pk %}">Delete</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% if is_paginated %}
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">&laquo; first</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    {% endif %}
+                    <span class="current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    </span>
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">next</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

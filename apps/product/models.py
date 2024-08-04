@@ -9,6 +9,7 @@ User = get_user_model()
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
         # verbose_name = "Catagory"

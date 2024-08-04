@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.views.generic import View, FormView, TemplateView, ListView
+from django.views.generic import View, FormView, TemplateView, \
+    ListView, UpdateView,DeleteView,CreateView
 from .forms import *
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
@@ -91,3 +92,27 @@ class UserListView(ListView):
     template_name = 'users_list.html'
     context_object_name = 'users'
     paginate_by = 15
+
+
+# Ensure you have a form defined for the user
+class UserCreateView(CreateView):
+    model = User
+    form_class = CustomUserForm
+    template_name = 'user_form.html'
+    success_url = reverse_lazy('authentication:user-list') 
+    
+class UserUpdateView(UpdateView):
+    model = User
+    form_class = CustomUserForm
+    template_name = 'user_form.html'
+    success_url = reverse_lazy('authentication:user-list')  # Redirect to the list view after updating
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['password'].required = False  # Password is not required on update
+        return form
+
+class UserDeleteView(DeleteView):
+    model = User
+    template_name = 'user_confirm_delete.html'
+    success_url = reverse_lazy('authentication:user-list')
