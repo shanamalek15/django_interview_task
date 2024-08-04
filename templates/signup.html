@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+<link href="{% static '/css/sign_up.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+{% block content %}
+<div class="container-login100">
+    <div class="wrap-login100 p-t-50 p-b-90">
+        <form class="login100-form validate-form flex-sb flex-w" id="signup-form" method="post">
+            {% csrf_token %}
+            <span class="login100-form-title mb-3">
+                Register
+            </span>
+
+            <!-- Username Field -->
+            <!-- <div class="wrap-input100 validate-input mb-3" data-validate="Username is required">
+                <input class="input100" type="text" name="username" placeholder="Username" value="{{ form.username.value|default:'' }}">
+                <span class="focus-input100"></span>
+                {% if form.username.errors %}
+                    <div class="text-danger">
+                        {{ form.username.errors }}
+                    </div>
+                {% endif %}
+            </div> -->
+
+            <!-- Email Field -->
+            <div class="wrap-input100 validate-input mb-3" data-validate="Email is required">
+                <input class="input100" type="email" name="email" placeholder="Email" value="{{ form.email.value|default:'' }}">
+                <span class="focus-input100"></span>
+                {% if form.email.errors %}
+                    <div class="text-danger">
+                        {{ form.email.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Password1 Field -->
+            <div class="wrap-input100 validate-input mb-3" data-validate="Password is required">
+                <input class="input100" type="password" name="password1" placeholder="Password">
+                <span class="focus-input100"></span>
+                {% if form.password1.errors %}
+                    <div class="text-danger">
+                        {{ form.password1.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Password2 Field -->
+            <div class="wrap-input100 validate-input mb-3" data-validate="Password confirmation is required">
+                <input class="input100" type="password" name="password2" placeholder="Confirm Password">
+                <span class="focus-input100"></span>
+                {% if form.password2.errors %}
+                    <div class="text-danger">
+                        {{ form.password2.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="flex-sb-m w-full p-t-3 p-b-24">
+                <div>
+                    <a href="{% url 'authentication:signin' %}" class="txt1">
+                        Login
+                    </a>
+                </div>
+            </div>
+            <div class="container-login100-form-btn m-t-17">
+                <button class="login100-form-btn" type="submit">
+                    Register
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

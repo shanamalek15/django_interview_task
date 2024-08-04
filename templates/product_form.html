@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+<link href="{% static 'css/sign_up.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<div class="container-login100">
+    <div class="wrap-login100 p-t-50 p-b-90">
+        <form class="login100-form validate-form flex-sb flex-w" id="product-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <span class="login100-form-title mb-3">
+                {% if form.instance.pk %}
+                    Update Product
+                {% else %}
+                    Create Product
+                {% endif %}
+            </span>
+
+            <!-- Category Field -->
+            <div class="wrap-input100 validate-input mb-3" data-validate="Category is required">
+                <select class="input100" name="category">
+                    <option value="" {% if not form.category.value %}selected{% endif %}>Select Category</option>
+                    {% for choice in form.category.field.queryset %}
+                        <option value="{{ choice.id }}" {% if choice.id == form.category.value %}selected{% endif %}>
+                            {{ choice.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <span class="focus-input100"></span>
+                {% if form.category.errors %}
+                    <div class="text-danger">
+                        {{ form.category.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Title Field -->
+            <div class="wrap-input100 validate-input mb-3" data-validate="Title is required">
+                <input class="input100" type="text" name="title" placeholder="Title" value="{{ form.title.value|default:'' }}">
+                <span class="focus-input100"></span>
+                {% if form.title.errors %}
+                    <div class="text-danger">
+                        {{ form.title.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Description Field -->
+            <div class="wrap-input100 validate-input mb-3" data-validate="Description is required">
+                <textarea class="input100" name="description" placeholder="Description">{{ form.description.value|default:'' }}</textarea>
+                <span class="focus-input100"></span>
+                {% if form.description.errors %}
+                    <div class="text-danger">
+                        {{ form.description.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Price Field -->
+            <div class="wrap-input100 validate-input mb-3" data-validate="Price is required">
+                <input class="input100" type="number" step="0.01" name="price" placeholder="Price" value="{{ form.price.value|default:'' }}">
+                <span class="focus-input100"></span>
+                {% if form.price.errors %}
+                    <div class="text-danger">
+                        {{ form.price.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Status Field -->
+            <div class="wrap-input100 validate-input mb-3" data-validate="Status is required">
+                <select class="input100" name="status">
+                    <option value="draft" {% if form.status.value == 'draft' %}selected{% endif %}>Draft</option>
+                    <option value="approved" {% if form.status.value == 'approved' %}selected{% endif %}>Approved</option>
+                    <option value="rejected" {% if form.status.value == 'rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+                <span class="focus-input100"></span>
+                {% if form.status.errors %}
+                    <div class="text-danger">
+                        {{ form.status.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Video Field -->
+            <div class="wrap-input100 validate-input mb-3">
+                <input class="input100" type="file" name="video">
+                <span class="focus-input100"></span>
+                {% if form.video.errors %}
+                    <div class="text-danger">
+                        {{ form.video.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="container-login100-form-btn m-t-17">
+                <button class="login100-form-btn" type="submit">
+                    {% if form.instance.pk %}
+                        Update
+                    {% else %}
+                        Create
+                    {% endif %}
+                </button>
+                <a href="{% url 'product:product-list' %}" class="login100-form-btn">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
