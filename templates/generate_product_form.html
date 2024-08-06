@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+<link href="{% static 'css/sign_up.css' %}" rel="stylesheet" />
+{% endblock %}
+
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="app-card app-card-settings shadow-sm p-4">
+                <div class="app-card-body">
+                    <form method="post"  class="settings-form">
+                        {% csrf_token %}
+                        
+                        <!-- Category Field -->
+                        <div class="mb-3">
+                            <label for="num_of_products" class="form-label">No of products</label>
+                            <input type="number" step="1"  min="1" class="form-control" id="num_of_products" name="num_of_products" placeholder="No of product" value="{{ form.price.value|default:'' }}" required>
+
+                            {% if form.num_of_products.errors %}
+                                <div class="text-danger">
+                                    {{ form.num_of_products.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3 text-right">
+                            <button type="submit" class="btn app-btn-primary">Generate
+                            </button>
+                            <a href="{% url 'product:product-list' %}" class="btn btn-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

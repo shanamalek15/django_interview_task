@@ -24,3 +24,8 @@ class ProductApprovalForm(forms.ModelForm):
             ('approved', 'Approved'),
             ('rejected', 'Rejected'),
         ]
+        
+        
+class DummyProductForm(forms.Form):
+    num_of_products = forms.IntegerField(min_value=1, label='Number of Dummy Products',
+                                    required=True)

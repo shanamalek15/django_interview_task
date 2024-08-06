@@ -4,38 +4,40 @@
 {% block css %}
 {% endblock %}
 
-{% block header %}
-{% endblock %}
-
 {% block content %}
 
 <div class="container mt-5">
-    <div class="card">
-        <div class="card-header">
-            <h2>{{ product.title }}</h2>
-        </div>
-        <div class="card-body">
-            <h5 class="card-title">Category: {{ product.category.name }}</h5>
-            <p class="card-text"><strong>Price:</strong> ${{ product.price }}</p>
-            <p class="card-text"><strong>Status:</strong> {{ product.get_status_display }}</p>
-            <p class="card-text"><strong>Created At:</strong> {{ product.created_at }}</p>
-            <p class="card-text"><strong>Updated At:</strong> {{ product.updated_at }}</p>
-            <p class="card-text"><strong>Created By:</strong> {{ product.created_by.username }}</p>
-            <p class="card-text"><strong>Description:</strong> {{ product.description }}</p>
-            <p class="card-text"><strong>Video:</strong></p>
-            {% if product.video %}
-                <div class="embed-responsive embed-responsive-16by9">
-                    <video controls class="embed-responsive-item" width="25%" height="25%">
-                        <source src="{{ product.video.url }}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2>{{ product.title }}</h2>
                 </div>
-            {% else %}
-                <p>No Video</p>
-            {% endif %}
-            <a href="{% url 'product:product-list' %}" class="btn btn-secondary mt-3">Back to Product List</a>
+                <div class="card-body">
+                    <h5 class="card-title">Category: {{ product.category.name }}</h5>
+                    <p class="card-text"><strong>Price:</strong> ${{ product.price }}</p>
+                    <p class="card-text"><strong>Status:</strong> {{ product.get_status_display }}</p>
+                    <p class="card-text"><strong>Created At:</strong> {{ product.created_at }}</p>
+                    <p class="card-text"><strong>Updated At:</strong> {{ product.updated_at }}</p>
+                    <p class="card-text"><strong>Created By:</strong> {{ product.created_by.username }}</p>
+                    <p class="card-text"><strong>Description:</strong> {{ product.description }}</p>
+                    <p class="card-text"><strong>Video:</strong></p>
+                    {% if product.video %}
+                        <div class="embed-responsive embed-responsive-16by9 mb-3">
+                            <video controls class="embed-responsive-item" style="width: 100%;">
+                                <source src="{{ product.video.url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                    {% else %}
+                        <p>No Video</p>
+                    {% endif %}
+                    <a href="{% url 'product:product-list' %}" class="btn btn-secondary mt-3">Back to Product List</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
 
 {% endblock %}

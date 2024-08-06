@@ -5,33 +5,37 @@
 <link href="{% static 'css/sign_up.css' %}" rel="stylesheet" />
 {% endblock %}
 
-{% block header %}
-{% endblock %}
-
 {% block content %}
-<div class="container-login100">
-    <div class="wrap-login100 p-t-50 p-b-90">
-        <form method="post">
-            {% csrf_token %}
-            <span class="login100-form-title mb-3">
-                Are you sure you want to delete this category?
-            </span>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="app-card app-card-settings shadow-sm p-4">
+                <div class="app-card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <h5 class="form-label text-center">
+                                Are you sure you want to delete this category?
+                            </h5>
+                        </div>
 
-            <div class="wrap-input100 validate-input mb-3">
-                <div class="text-center">
-                    <p><strong>Category:</strong> {{ object.name }}</p>
+                        <div class="mb-3 text-center">
+                            <p><strong>Category:</strong> {{ object.name }}</p>
+                        </div>
+
+                        <div class="text-right">
+                            <button type="submit" class="btn app-btn-primary">
+                                Delete
+                            </button>
+                            <a href="{% url 'product:category-list' %}" class="btn btn-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
                 </div>
             </div>
-
-            <div class="container-login100-form-btn m-t-17">
-                <button class="login100-form-btn" type="submit">
-                    Delete
-                </button>
-                <a href="{% url 'product:category-list' %}" class="login100-form-btn">
-                    Cancel
-                </a>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
+
 {% endblock %}

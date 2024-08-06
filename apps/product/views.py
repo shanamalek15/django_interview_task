@@ -1,19 +1,21 @@
 from django.shortcuts import render
-
+from django.http import HttpResponse
 # Create your views here.
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, View, FormView
 from .models import Category, Product
 from .forms import *
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-
+import csv
+from . tasks import generate_dummy_products_data
 # Category Views
 class CategoryListView(LoginRequiredMixin, ListView):
     model = Category
     template_name = 'category_list.html'
     context_object_name = 'categories'
+    paginate_by = 10
 
 class CategoryCreateView(LoginRequiredMixin, CreateView):
     model = Category
@@ -47,6 +49,22 @@ class ProductListView(LoginRequiredMixin, ListView):
     model = Product
     template_name = 'product_list.html'
     context_object_name = 'products'
+    paginate_by = 10
+    
+    
+     # shana added 
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Product.objects.all().order_by('id')
+        print("user=============", user.role)
+        if user.role == 'agent':
+            queryset = queryset.filter(created_by=user)
+        elif user.role == 'staff' :
+            queryset = queryset.filter(created_by=user)
+        elif user.role == 'admin':
+            queryset = queryset.all()
+        return queryset
+    
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
@@ -99,3 +117,31 @@ class ProductApprovalUpdateView(UpdateView):
         elif status == 'rejected':
             messages.success(self.request, f'Product "{self.object.title}" has been rejected.')
         return response
+    
+    
+class ExportProductsView(View):
+    
+    def get(self, request):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="products.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['Title', 'Category', 'Description', 'Price', 'Status', 'Created At', 'Updated At', 'Created By'])
+        
+        products = Product.objects.all().select_related('category', 'created_by')
+        for product in products:
+            writer.writerow([product.title, product.category.name, product.description, product.price, product.get_status_display(), product.created_at, product.updated_at, product.created_by.username])
+        
+        return response
+    
+class GenerateDummyProductsView(FormView):
+    template_name = 'generate_product_form.html'
+    form_class = DummyProductForm
+    success_url = reverse_lazy('product:product-list')
+    
+    
+    def form_valid(self, form):
+        num_products = form.cleaned_data['num_of_products']
+        user_id = self.request.user.id
+        generate_dummy_products_data.delay(num_products, user_id)
+        messages.success(self.request, f'Started generating {num_products} dummy products.')
+        return super().form_valid(form)

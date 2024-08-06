@@ -1,14 +1,19 @@
-{% extends 'base.html' %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block css %}
-<link href="{% static '/css/sign_up.css' %}" rel="stylesheet" />
-{% endblock %}
+<head>
+    <title>Login</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Portal - Bootstrap 5 Admin Dashboard Template For Developers">
+	<meta name="author" content="Xiaoying Riley at 3rd Wave Media">
+	 <link rel="stylesheet" href="{% static 'fontawesome.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/libs/bootstrap.min.css' %}">
+	<link  rel="stylesheet" href="{% static 'css/sign_in.css' %}">
+</head>
 
-{% block header %}
-{% endblock %}
-
-{% block content %}
 <div class="container-login100">
     <div class="wrap-login100 p-t-50 p-b-90">
         <form class="login100-form validate-form flex-sb flex-w" id="login-form" method="post">
@@ -17,7 +22,6 @@
                 Login
             </span>
 
-            <!-- Email Field -->
             <div class="wrap-input100 validate-input mb-3" data-validate="Email is required">
                 <input class="input100" type="email" name="email" placeholder="Email" value="{{ form.email.value|default:'' }}">
                 <span class="focus-input100"></span>
@@ -28,7 +32,6 @@
                 {% endif %}
             </div>
 
-            <!-- Password Field -->
             <div class="wrap-input100 validate-input mb-3" data-validate="Password is required">
                 <input class="input100" type="password" name="password" placeholder="Password">
                 <span class="focus-input100"></span>
@@ -55,4 +58,3 @@
         </form>
     </div>
 </div>
-{% endblock %}

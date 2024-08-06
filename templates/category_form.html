@@ -5,46 +5,54 @@
 <link href="{% static 'css/sign_up.css' %}" rel="stylesheet" />
 {% endblock %}
 
-{% block header %}
-{% endblock %}
+
 
 {% block content %}
-<div class="container-login100">
-    <div class="wrap-login100 p-t-50 p-b-90">
-        <form class="login100-form validate-form flex-sb flex-w" id="category-form" method="post">
-            {% csrf_token %}
-            <span class="login100-form-title mb-3">
-                {% if form.instance.pk %}
-                    Update Category
-                {% else %}
-                    Create Category
-                {% endif %}
-            </span>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="app-card app-card-settings shadow-sm p-4">
+                <div class="app-card-body">
+                    <form id="category-form" method="post" class="settings-form">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <h5 class="form-label">
+                                {% if form.instance.pk %}
+                                    Update Category
+                                {% else %}
+                                    Create Category
+                                {% endif %}
+                            </h5>
+                        </div>
 
-            <!-- Name Field -->
-            <div class="wrap-input100 validate-input mb-3" data-validate="Name is required">
-                <input class="input100" type="text" name="name" placeholder="Category Name" value="{{ form.name.value|default:'' }}">
-                <span class="focus-input100"></span>
-                {% if form.name.errors %}
-                    <div class="text-danger">
-                        {{ form.name.errors }}
-                    </div>
-                {% endif %}
-            </div>
+                        <!-- Name Field -->
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Category Name</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Category Name" value="{{ form.name.value|default:'' }}" required>
+                            {% if form.name.errors %}
+                                <div class="text-danger">
+                                    {{ form.name.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
 
-            <div class="container-login100-form-btn m-t-17">
-                <button class="login100-form-btn" type="submit">
-                    {% if form.instance.pk %}
-                        Update
-                    {% else %}
-                        Create
-                    {% endif %}
-                </button>
-                <a href="{% url 'product:category-list' %}" class="login100-form-btn">
-                    Cancel
-                </a>
+                        <div class="text-right">
+                            <button type="submit" class="btn app-btn-primary">
+                                {% if form.instance.pk %}
+                                    Update
+                                {% else %}
+                                    Create
+                                {% endif %}
+                            </button>
+                            <a href="{% url 'product:category-list' %}" class="btn btn-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </form>
+        </div>
     </div>
 </div>
+
 {% endblock %}

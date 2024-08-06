@@ -50,7 +50,8 @@ DJANGO_APPS = [
 
 PROJECT_APPS = [
     'apps.product',
-    'apps.user_auth'
+    'apps.user_auth',
+    # 'celery'
 
 ]
 
@@ -171,3 +172,12 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 LOGIN_URL = 'authentication:signin'
+
+
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
+CELERY_TIMEZONE = 'UTC'
+CELERY_TIMEZONE = 'UTC'
+
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240 

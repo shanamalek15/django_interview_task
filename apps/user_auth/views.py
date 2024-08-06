@@ -91,7 +91,7 @@ class UserListView(ListView):
     model = User
     template_name = 'users_list.html'
     context_object_name = 'users'
-    paginate_by = 15
+    paginate_by = 10
 
 
 # Ensure you have a form defined for the user
