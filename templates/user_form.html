@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block css %}
-<link href="{% static 'css/sign_up.css' %}" rel="stylesheet" />
+<!-- <link href="{% static 'css/sign_up.css' %}" rel="stylesheet" /> -->
 {% endblock %}
 
 
@@ -14,6 +14,22 @@
                 <div class="app-card-body">
                     <form method="post">
                         {% csrf_token %}
+                        
+                        {% if form.errors %}
+                            <div class="error alert alert-danger">
+                                <ul>
+                                    {% for field in form %}
+                                        {% for error in field.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                    {% for error in form.non_field_errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+
                         <div class="mb-3">
                             <h5 class="form-label text-center">
                                 {% if form.instance.pk %}
@@ -27,60 +43,35 @@
                         <!-- Email Field -->
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" name="email" placeholder="Email" value="{{ form.email.value|default:'' }}">
-                            {% if form.email.errors %}
-                                <div class="text-danger">
-                                    {{ form.email.errors }}
-                                </div>
-                            {% endif %}
+                            <input type="email" class="form-control" name="email" placeholder="Email" value="{{ form.email.value|default:'' }}" required>
                         </div>
 
                         <!-- Role Field -->
                         <div class="mb-3">
                             <label for="role" class="form-label">Role</label>
-                            <select class="form-control" name="role">
+                            <select class="form-control" name="role" required>
                                 <option value="admin" {% if form.role.value == 'admin' %}selected{% endif %}>Admin</option>
                                 <option value="staff" {% if form.role.value == 'staff' %}selected{% endif %}>Staff</option>
                                 <option value="agent" {% if form.role.value == 'agent' %}selected{% endif %}>Agent</option>
                             </select>
-                            {% if form.role.errors %}
-                                <div class="text-danger">
-                                    {{ form.role.errors }}
-                                </div>
-                            {% endif %}
                         </div>
 
                         <!-- First Name Field -->
                         <div class="mb-3">
                             <label for="first_name" class="form-label">First Name</label>
-                            <input type="text" class="form-control" name="first_name" placeholder="First Name" value="{{ form.first_name.value|default:'' }}">
-                            {% if form.first_name.errors %}
-                                <div class="text-danger">
-                                    {{ form.first_name.errors }}
-                                </div>
-                            {% endif %}
+                            <input type="text" class="form-control" name="first_name" placeholder="First Name" value="{{ form.first_name.value|default:'' }}" required>
                         </div>
 
                         <!-- Last Name Field -->
                         <div class="mb-3">
                             <label for="last_name" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" name="last_name" placeholder="Last Name" value="{{ form.last_name.value|default:'' }}">
-                            {% if form.last_name.errors %}
-                                <div class="text-danger">
-                                    {{ form.last_name.errors }}
-                                </div>
-                            {% endif %}
+                            <input type="text" class="form-control" name="last_name" placeholder="Last Name" value="{{ form.last_name.value|default:'' }}" required>
                         </div>
 
                         <!-- Password Field -->
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" name="password" placeholder="Password" value="{{ form.password.value|default:'' }}" {% if form.fields.password.widget.attrs.readonly %}readonly{% endif %}>
-                            {% if form.password.errors %}
-                                <div class="text-danger">
-                                    {{ form.password.errors }}
-                                </div>
-                            {% endif %}
+                            <input type="password" class="form-control" name="password" placeholder="Password" value="{{ form.password.value|default:'' }}" required {% if form.fields.password.widget.attrs.readonly %}readonly{% endif %}>
                             {% if form.fields.password.help_text %}
                                 <small class="form-text text-muted">{{ form.fields.password.help_text }}</small>
                             {% endif %}
@@ -104,5 +95,6 @@
         </div>
     </div>
 </div>
+
 
 {% endblock %}

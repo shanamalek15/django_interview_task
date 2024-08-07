@@ -1,0 +1,32 @@
+.action-btn {
+    padding: 3px;
+    border: 1px solid;
+    color: #675f5fd6;
+    margin: 1px;
+}
+
+.error {
+    color: red;
+    border: 1px solid red;
+    background-color: #fdd;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+}
+
+.app-footer {
+    background-color: #827ffe;
+    color: aliceblue;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10000 !important;
+}
+
+.approval-btn {
+    padding: 2px;
+    width: 60px;
+    font-size: 10px !important;
+    color: #ffff;
+}

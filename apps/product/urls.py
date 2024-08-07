@@ -19,6 +19,7 @@ urlpatterns = [
     path('product-approval/<int:pk>/', ProductApprovalUpdateView.as_view(), name='product-approval'),
     path('export-products/', ExportProductsView.as_view(), name='export-products'),
     path('generate-products/', GenerateDummyProductsView.as_view(), name='generate-dummy-products'),
+    path('product/approval/<int:pk>', ProductApprovalView.as_view(), name='product-approval'),
 
     
 

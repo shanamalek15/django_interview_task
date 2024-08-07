@@ -38,7 +38,7 @@ input {
     display: block;
     width: 100%;
     background: 0 0;
-    height: 62px;
+    height: 45px;
     padding: 0 20px 0 38px;
 }
 .wrap-input100 {
@@ -125,4 +125,13 @@ input {
     display: -ms-flexbox;
     display: flex;
     flex-wrap: wrap;
+}
+
+.error {
+    color: red;
+    border: 1px solid red;
+    background-color: #fdd;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
 }

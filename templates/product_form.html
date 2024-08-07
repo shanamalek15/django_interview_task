@@ -15,7 +15,6 @@
                     <form id="product-form" method="post" enctype="multipart/form-data" class="settings-form">
                         {% csrf_token %}
                         
-                        <!-- Category Field -->
                         <div class="mb-3">
                             <label for="category" class="form-label">Category</label>
                             <select class="form-control" id="category" name="category" required>
@@ -33,7 +32,6 @@
                             {% endif %}
                         </div>
 
-                        <!-- Title Field -->
                         <div class="mb-3">
                             <label for="title" class="form-label">Title</label>
                             <input type="text" class="form-control" id="title" name="title" placeholder="Title" value="{{ form.title.value|default:'' }}" required>
@@ -44,7 +42,6 @@
                             {% endif %}
                         </div>
 
-                        <!-- Description Field -->
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
                             <textarea class="form-control" id="description" name="description" placeholder="Description" required>{{ form.description.value|default:'' }}</textarea>
@@ -55,7 +52,6 @@
                             {% endif %}
                         </div>
 
-                        <!-- Price Field -->
                         <div class="mb-3">
                             <label for="price" class="form-label">Price</label>
                             <input type="number" step="0.01" class="form-control" id="price" name="price" placeholder="Price" value="{{ form.price.value|default:'' }}" required>
@@ -66,22 +62,6 @@
                             {% endif %}
                         </div>
 
-                        <!-- Status Field -->
-                        <div class="mb-3">
-                            <label for="status" class="form-label">Status</label>
-                            <select class="form-control" id="status" name="status" required>
-                                <option value="draft" {% if form.status.value == 'draft' %}selected{% endif %}>Draft</option>
-                                <option value="approved" {% if form.status.value == 'approved' %}selected{% endif %}>Approved</option>
-                                <option value="rejected" {% if form.status.value == 'rejected' %}selected{% endif %}>Rejected</option>
-                            </select>
-                            {% if form.status.errors %}
-                                <div class="text-danger">
-                                    {{ form.status.errors }}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Video Field -->
                         <div class="mb-3">
                             <label for="video" class="form-label">Video</label>
                             <input type="file" class="form-control-file" id="video" name="video">

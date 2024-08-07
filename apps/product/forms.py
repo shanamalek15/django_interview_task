@@ -9,7 +9,7 @@ class CategoryForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['category', 'title', 'description', 'price', 'status', 'video']
+        fields = ['category', 'title', 'description', 'price', 'video']
 
 
 class ProductApprovalForm(forms.ModelForm):

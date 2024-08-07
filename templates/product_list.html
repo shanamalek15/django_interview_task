@@ -37,10 +37,10 @@
 <div class="tab-content" id="orders-table-tab-content">
     <div class="tab-pane fade show active" id="orders-all" role="tabpanel"
         aria-labelledby="orders-all-tab">
-        <div class="app-card app-card-orders-table shadow-sm mb-5">
-            <div class="app-card-body">
-                <div class="table-responsive">
-                    <table class="table app-table-hover mb-0 text-left">
+        <div class="card app-card app-card-orders-table shadow-sm mb-5">
+        <div class="card-body app-card-body">
+            <div class="table-responsive">
+                <table class="table app-table-hover mb-0 text-left text-nowrap table-bordered">
                         <thead>
                             <tr>
                                 <th class="cell">Title</th>
@@ -51,7 +51,7 @@
                                 <th class="cell text-center">Updated At</th>
                                 <th class="cell text-center">Created By</th>
                                 <th class="cell text-center">Description</th>
-                                <th class="cell text-center">Video</th>
+                                <th class="cell text-center">Approval</th>
                                 <th class="cell text-center">Actions</th>
                             </tr>
                         </thead>
@@ -65,22 +65,54 @@
                                 <td class="cell text-center">{{ product.get_status_display }}</td>
                                 <td class="cell text-center">{{ product.created_at }}</td>
                                 <td class="cell text-center">{{ product.updated_at }}</td>
-                                <td class="cell text-center">{{ product.created_by.username }}</td>
+                                <td class="cell text-center">{{ product.created_by.email }}</td>
                                 <td class="cell text-center">{{ product.description }}</td>
-                                <td class="cell text-center">
-                                    {% if product.video %}
-                                    <a href="{{ product.video.url }}" target="_blank">View Video</a>
-                                    {% else %}
-                                    No Video
-                                    {% endif %}
-                                </td>
-                                <td class="cell text-center">
-                                    <a href="{% url 'product:product-detail' product.id %}">View</a>
-                                    <a href="{% url 'product:product-update' product.id %}">Edit</a>
-                                    <a href="{% url 'product:product-delete' product.id %}" >Delete</a>
+                                <td class="cell text-center">     
                                     {% if product.status == 'draft' %}
-                                    <a href="{% url 'product:product-approval' product.id %}" >Approve</a>
-                                    {% endif %}
+                                    <form class="d-inline-block status-form" method="post" action="{% url 'product:product-approval' product.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                                        <input type="hidden" name="status" value="approved">
+                                        <button type="submit" class="btn btn-sm btn-success approval-btn">Approve</button>
+                                    </form>
+                                    <form class="d-inline-block status-form"  method="post" action="{% url 'product:product-approval' product.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                                        <input type="hidden" name="status" value="rejected">
+                                        <button type="submit" class="btn btn-sm btn-danger approval-btn">Reject</button>
+                                    </form>
+                                    {% elif product.status == 'approved' %}
+                                    <form class="d-inline-block status-form" method="post" action="{% url 'product:product-approval' product.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                                        <input type="hidden" name="status" value="draft">
+                                        <button type="submit" class="btn btn-sm btn-warning approval-btn">Draft</button>
+                                    </form>
+                                    <form class="d-inline-block status-form" method="post" action="{% url 'product:product-approval' product.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                                        <input type="hidden" name="status" value="rejected">
+                                        <button type="submit" class="btn btn-sm btn-danger approval-btn">Reject</button>
+                                    </form>
+                                    {% elif product.status == 'rejected' %}
+                                    <form class="d-inline-block status-form" method="post" action="{% url 'product:product-approval' product.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                                        <input type="hidden" name="status" value="draft">
+                                        <button type="submit" class="btn btn-sm btn-warning approval-btn">Draft</button>
+                                    </form>
+                                    <form class="d-inline-block status-form" method="post" action="{% url 'product:product-approval' product.id %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                                        <input type="hidden" name="status" value="approved">
+                                        <button type="submit" class="btn btn-sm btn-success approval-btn">Approve</button>
+                                    </form>
+                                    {% endif %}</td>
+                                <td class="cell text-center">
+                                    <a class="btn btn-sm action-btn" href="{% url 'product:product-detail' product.id %}"><i class="fa-solid fa-eye"></i>View</a>
+                                    <a class="btn btn-sm action-btn" href="{% url 'product:product-update' product.id %}"><i class="fa-solid fa-pencil"></i>Edit</a>
+                                    <a class="btn btn-sm action-btn" href="{% url 'product:product-delete' product.id %}" ><i class="fa-solid fa-trash"></i>Delete</a>
+                               
                                 </td>
                             </tr>
                             {% endfor %}
@@ -169,12 +201,53 @@
 
 {% block js %}
 <script>
+    alert("<>>>>>>>>.")
     function jumpToPage() {
         var page = document.getElementById('jump-page-input').value;
         var url = new URL(window.location.href);
         url.searchParams.set('page', page);
         window.location.href = url.href;
     }
+
+$(document).ready(function() {
+    $('.status-form').submit(function(event) {
+        alert("<>>>>>>>>>.")
+        event.preventDefault(); // Prevent the default form submission
+
+        var form = $(this);
+        var formData = form.serialize(); // Serialize form data
+
+        $.ajax({
+            url: form.attr('action'),
+            method: 'POST',
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Status updated to ' + response.status,
+                    }).then(() => {
+                        location.reload(); // Reload the page on success
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.error || 'An error occurred.',
+                    });
+                }
+            },
+            error: function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An unexpected error occurred.',
+                });
+            }
+        });
+    });
+});
 
 </script>
 {% endblock js %}

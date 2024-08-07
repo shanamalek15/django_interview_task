@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 # Create your views here.
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
@@ -10,6 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 import csv
 from . tasks import generate_dummy_products_data
+
 # Category Views
 class CategoryListView(LoginRequiredMixin, ListView):
     model = Category
@@ -51,19 +52,15 @@ class ProductListView(LoginRequiredMixin, ListView):
     context_object_name = 'products'
     paginate_by = 10
     
-    
-     # shana added 
     def get_queryset(self):
         user = self.request.user
-        queryset = Product.objects.all().order_by('id')
-        print("user=============", user.role)
-        if user.role == 'agent':
-            queryset = queryset.filter(created_by=user)
-        elif user.role == 'staff' :
-            queryset = queryset.filter(created_by=user)
-        elif user.role == 'admin':
-            queryset = queryset.all()
-        return queryset
+        if user.role == 'admin':
+            return Product.objects.all().order_by('id')
+        elif user.role == 'staff':
+            # Staff can see their own products and products created by agents
+            return Product.objects.filter(created_by__role='agent').order_by('id') | Product.objects.filter(created_by=user).order_by('id')
+        else:  # For agents
+            return Product.objects.filter(created_by=user).order_by('id')
     
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
@@ -75,14 +72,15 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
    
     def form_valid(self, form):
         category_id = self.request.POST.get('category')
-        print('category_id: ', category_id)
-        if category_id == 'new':
-            new_category_name = self.request.POST.get('new_category')
-            category, created = Category.objects.get_or_create(name=new_category_name)
-            form.instance.category = category
-        else:
-            form.instance.category_id = category_id
+        form.instance.category_id = category_id
         form.instance.created_by = self.request.user
+
+        # Set the product status based on the user's role
+        if self.request.user.role in ['admin', 'staff']:
+            form.instance.status = 'approved'
+        else:
+            form.instance.status = 'draft'
+
         return super().form_valid(form)
 
     
@@ -145,3 +143,17 @@ class GenerateDummyProductsView(FormView):
         generate_dummy_products_data.delay(num_products, user_id)
         messages.success(self.request, f'Started generating {num_products} dummy products.')
         return super().form_valid(form)
+    
+    
+class ProductApprovalView(View):
+    def post(self, request, *args, **kwargs):
+        product_id = request.POST.get('product_id')
+        new_status = request.POST.get('status')
+        
+        product = get_object_or_404(Product, id=product_id)
+        
+        if new_status in dict(Product.upload_status).keys():
+            product.status = new_status
+            product.save()
+            return JsonResponse({'success': True, 'status': new_status})
+        return JsonResponse({'success': False, 'error': 'Invalid status'})

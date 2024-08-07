@@ -18,7 +18,7 @@
                         <!-- Category Field -->
                         <div class="mb-3">
                             <label for="num_of_products" class="form-label">No of products</label>
-                            <input type="number" step="1"  min="1" class="form-control" id="num_of_products" name="num_of_products" placeholder="No of product" value="{{ form.price.value|default:'' }}" required>
+                            <input type="number" step="1"  min="1" max="1000" class="form-control" id="num_of_products" name="num_of_products" placeholder="No of product" value="{{ form.price.value|default:'' }}" required>
 
                             {% if form.num_of_products.errors %}
                                 <div class="text-danger">

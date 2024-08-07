@@ -2,14 +2,17 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth import authenticate
 
 User = get_user_model()
 
 class SignupForm(UserCreationForm):  
-    email = forms.EmailField(max_length=200, help_text='Required')  
+    email = forms.EmailField(max_length=200, help_text='Required')
+    first_name = forms.CharField(max_length=30, required=True, help_text='Required')
+    last_name = forms.CharField(max_length=30, required=True, help_text='Required') 
     class Meta:  
         model = User  
-        fields = ('email', 'password1', 'password2')  
+        fields = ('email', 'first_name', 'last_name', 'password1', 'password2')
         
         
 class CustomUserForm(forms.ModelForm):
@@ -26,34 +29,16 @@ class CustomUserForm(forms.ModelForm):
             'password': forms.PasswordInput(attrs={'required': 'required'}),
         }
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     # Make all fields required except password
-    #     for field in self.fields:
-    #         if field != 'password':
-    #             self.fields[field].required = True
-        
-    #     # If updating user, show hashed password
-    #     if self.instance.pk:
-    #         # self.fields['password'].widget.attrs['readonly'] = True
-    #         self.fields['password'].help_text = "This is the hashed value of the password. You can leave this as is or change it to update the password."
-
     def clean_password(self):
         password = self.cleaned_data.get('password')
-        
         if self.instance.pk:
-            # If updating, check if the password field is empty or unchanged
             if not password:
-                # If password is empty, retain the existing password
                 return self.instance.password
             elif password == self.instance.password:
-                # If the entered password is the same as the existing one, retain the existing password
                 return self.instance.password
             else:
-                # If password is changed, hash the new password
                 return make_password(password)
         else:
-            # If creating a new user, hash the password
             return make_password(password)
             
 class EmailLoginForm(forms.Form):
@@ -63,10 +48,8 @@ class EmailLoginForm(forms.Form):
     def clean(self):
         email = self.cleaned_data.get('email')
         password = self.cleaned_data.get('password')
-        
-        if email and password:
-            from django.contrib.auth import authenticate
-            user = authenticate(username=email, password=password)
-            if user is None:
-                raise forms.ValidationError('Invalid email or password')
+        user = authenticate(email=email, password=password)
+        if not user:
+            raise forms.ValidationError('Invalid login credentials')
+        self.cleaned_data['user'] = user
         return self.cleaned_data

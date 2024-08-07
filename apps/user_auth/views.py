@@ -18,6 +18,7 @@ from django.urls import reverse_lazy
 class UserSignupView(FormView):
     template_name = 'signup.html'
     form_class = SignupForm
+    success_url = reverse_lazy('authentication:activation_sent')
 
     def form_valid(self, form):
         user = form.save(commit=False)
@@ -37,7 +38,10 @@ class UserSignupView(FormView):
         # email = EmailMessage(mail_subject, message, to=[to_email])
         # email.send()
         
-        return redirect('authentication:activation_sent')
+        return redirect(self.success_url)
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
 
 
     def form_invalid(self, form):
@@ -53,16 +57,10 @@ class UserSignInView(FormView):
     form_class = EmailLoginForm
     
     def form_valid(self, form):
-        email = form.cleaned_data.get('email')
-        password = form.cleaned_data.get('password')
-        user = authenticate(username=email, password=password)
-        
-        if user is not None:
-            login(self.request, user)
-            return redirect('product:product-list')  # Redirect to a home or dashboard page
-        else:
-            return self.form_invalid(form)
-    
+        user = form.cleaned_data.get('user')
+        login(self.request, user)
+        return redirect('product:product-list')
+
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(form=form))
     

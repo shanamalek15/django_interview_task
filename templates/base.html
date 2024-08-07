@@ -10,9 +10,11 @@
 	<meta name="description" content="Portal - Bootstrap 5 Admin Dashboard Template For Developers">
 	<meta name="author" content="Xiaoying Riley at 3rd Wave Media">
 	<link rel="shortcut icon" href="favicon.ico">
-	<link rel="stylesheet" href="{% static 'fontawesome.min.css' %}">
 	<link rel="stylesheet" href="{% static 'css/libs/bootstrap.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/libs/sweetalert2.min.css' %}">
 	<link id="theme-style" rel="stylesheet" href="{% static 'css/portal.css' %}">
+	<link rel="stylesheet" href="{% static 'css/libs/all.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/base.css' %}">
 	{% block css %}
 	{% endblock %}
 </head>
@@ -111,8 +113,8 @@
 
 	<div class="app-wrapper">
 
-		<div class="app-content pt-3 p-md-3 p-lg-4">
-			<div class="container-xl">
+		<div class="app-content pt-3">
+			<div class="container-fluid">
 				{% block content %}
 
 
@@ -125,10 +127,6 @@
 	{% block footer %}
 	<footer class="app-footer">
 		<div class="container text-center py-3">
-			<small class="copyright">Designed with <span class="sr-only">love</span><i class="fas fa-heart"
-					style="color: #fb866a;"></i> by <a class="app-link" href="http://themes.3rdwavemedia.com"
-					target="_blank">Xiaoying Riley</a> for developers</small>
-
 		</div>
 	</footer>
 	{% endblock %}
@@ -137,6 +135,8 @@
 	<script src="{% static 'js/libs/popper.min.js' %}"></script>
 	<script src="{% static 'js/libs/bootstrap.min.js' %}"></script>
 	<script src="{% static 'js/app.js' %}"></script>
+	<script src="{% static 'js/libs/sweetalert2.all.min.js' %}"></script>
+	<script src="{% static 'js/libs/jquery.min.js' %}"></script>
 	{% block js %}
 	{% endblock %}
 

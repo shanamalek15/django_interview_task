@@ -7,13 +7,17 @@
 {% block content %}
 
 <div class="container mt-5">
-    <div class="card">
-        <div class="card-header">
-            <h2>{{ category.title }}</h2>
-        </div>
-        <div class="card-body">
-            <h5 class="card-title">Category: {{ category.name }}</h5>
-            <a href="{% url 'product:category-list' %}" class="btn btn-secondary">Back to Product List</a>
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5>Category Details</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Name: {{ category.name }}</p>
+                    <a href="{% url 'product:category-list' %}" class="btn btn-secondary mt-3">Back to Product List</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
