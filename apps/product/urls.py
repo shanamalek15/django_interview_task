@@ -21,7 +21,9 @@ urlpatterns = [
     path('generate-products/', GenerateDummyProductsView.as_view(), name='generate-dummy-products'),
     path('product/approval/<int:pk>', ProductApprovalView.as_view(), name='product-approval'),
 
-    
+    path('encryption-form/', EncryptionView.as_view(), name='encryption-form'),
+    path('encryption/', EncryptionFormView.as_view(), name='encryption'),
+    path('decryption/', DecryptionFormView.as_view(), name='decryption'),
 
 ]
 

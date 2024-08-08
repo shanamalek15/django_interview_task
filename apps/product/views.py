@@ -9,9 +9,13 @@ from .forms import *
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 import csv
-from . tasks import generate_dummy_products_data
+from . tasks import generate_dummy_products_data, upload_video_task
 from django.utils.decorators import method_decorator
 from .permissions import *
+import json
+import base64
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
 # Category Views
 class CategoryListView(LoginRequiredMixin, ListView):
     model = Category
@@ -83,6 +87,23 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
             form.instance.status = 'approved'
         else:
             form.instance.status = 'draft'
+            
+        product = form.save()
+        print('product: ', product)
+        if self.request.FILES.get('video'):
+            video_file = self.request.FILES.get('video')
+            print('video_file: ', video_file)
+            mime_type, _ = mimetypes.guess_type(video_file.name)
+            if mime_type and mime_type.startswith('video'):
+                # Save the form instance to get the product ID
+                # product = form.save(commit=False)
+
+                # Trigger the Celery task for video processing
+                upload_video_task.delay(product.id, video_file.name)
+                return super().form_valid(form)
+        else:
+            # Process normally if it's not a video file
+            return super().form_valid(form)
 
         return super().form_valid(form)
 
@@ -170,3 +191,72 @@ class ProductApprovalView(LoginRequiredMixin, View):
             product.save()
             return JsonResponse({'success': True, 'status': new_status})
         return JsonResponse({'success': False, 'error': 'Invalid status'})
+    
+    
+class EncryptionView(View):
+
+    def get(self, request):
+        return render(request, 'encyption_view.html')
+
+
+def encrypt_aes(plain_text, key):
+    try:
+        cipher = AES.new(key, AES.MODE_ECB)
+        padding_length = 16 - (len(plain_text) % 16)
+        padded_plain_text = plain_text + (chr(padding_length) * padding_length)
+        encrypted_data = cipher.encrypt(padded_plain_text.encode('utf-8'))
+        return base64.b64encode(encrypted_data).decode('utf-8')
+    except Exception as e:
+        return None
+    
+def decrypt_aes(encrypted_data, key):
+    try:
+        cipher = AES.new(key, AES.MODE_ECB)
+        decrypted_data = cipher.decrypt(base64.b64decode(encrypted_data))
+        padding_length = decrypted_data[-1]
+        decrypted_data = decrypted_data[:-padding_length]
+        return decrypted_data.decode('utf-8')
+    except Exception as e:
+        return None
+
+class EncryptionFormView(View):
+    
+    def post(self, request):
+        try:
+            # Extract data from the request
+            data =  json.loads(request.body).get('data')
+            print('data: ', data)
+            key = base64.b64decode("bXVzdGJlMTZieXRlc2tleQ==") 
+            # Encrypt the plain text
+            encrypted_data = encrypt_aes(data, key)
+            print('encrypted_data: ', encrypted_data)
+
+            if encrypted_data is None:
+                return JsonResponse({'success': False, 'error': 'Encryption failed'})
+
+            return JsonResponse({'success': True, 'data': encrypted_data})
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+
+
+
+
+class DecryptionFormView(View):
+    
+    def post(self, request):
+        try:
+            encrypted_data = json.loads(request.body).get('data')
+            key = base64.b64decode("bXVzdGJlMTZieXRlc2tleQ==")  # Replace with your Base64 encoded key
+            decrypted_data = decrypt_aes(encrypted_data, key)
+            print('decrypted_data: ', decrypted_data)
+
+            if decrypted_data is None:
+                return JsonResponse({'success': False, 'error': 'Decryption failed'})
+
+            data = json.loads(decrypted_data)
+
+            return JsonResponse({'success': True, 'data': data})
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})

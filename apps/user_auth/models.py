@@ -35,7 +35,8 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = [] 
     username = models.CharField(max_length=150, blank=True, null=True)  # Make username optional
 
-    
+    class Meta:
+        ordering = ['-date_joined'] 
 
     def __str__(self):
         return self.email

@@ -35,3 +35,8 @@ def generate_dummy_products_data(no_of_products, user_id):
         print('duration: ', duration)
 
 
+@shared_task
+def upload_video_task(product_id, video_path):
+    product = Product.objects.get(id=product_id)
+    product.video = video_path
+    product.save()

@@ -14,6 +14,7 @@
 	<link id="theme-style" rel="stylesheet" href="{% static 'css/portal.css' %}">
 	<link rel="stylesheet" href="{% static 'css/libs/all.min.css' %}">
 	<link rel="stylesheet" href="{% static 'css/base.css' %}">
+	<script src="{% static 'js/libs/crypto.min.js' %}"></script>
 	{% block css %}
 	{% endblock %}
 </head>
@@ -109,6 +110,13 @@
 
 								</span>
 								<span class="nav-link-text">Generate Products</span>
+							</a>
+
+							<a class="nav-link active" href="{% url 'product:encryption-form' %}">
+								<span class="nav-icon">
+
+								</span>
+								<span class="nav-link-text">Encryption Form</span>
 							</a>
 						</li>
 						{% endif %}

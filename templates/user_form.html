@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block css %}
-<!-- <link href="{% static 'css/sign_up.css' %}" rel="stylesheet" /> -->
 {% endblock %}
 
 
@@ -14,6 +13,8 @@
                 <div class="app-card-body">
                     <form method="post">
                         {% csrf_token %}
+
+                        
                         
                         {% if form.errors %}
                             <div class="error alert alert-danger">
@@ -66,6 +67,11 @@
                         <div class="mb-3">
                             <label for="last_name" class="form-label">Last Name</label>
                             <input type="text" class="form-control" name="last_name" placeholder="Last Name" value="{{ form.last_name.value|default:'' }}" required>
+                        </div>
+                        <!-- Last Name Field -->
+                        <div class="mb-3">
+                            <label for="last_name" class="form-label">Is active</label>
+                            {{form.is_active}}
                         </div>
 
                         <!-- Password Field -->

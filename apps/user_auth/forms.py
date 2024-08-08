@@ -20,7 +20,7 @@ class CustomUserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['email', 'role', 'first_name', 'last_name', 'password']
+        fields = ['email', 'role', 'first_name', 'last_name', 'password', 'is_active']
         widgets = {
             'email': forms.EmailInput(attrs={'required': 'required'}),
             'role': forms.Select(attrs={'required': 'required'}),

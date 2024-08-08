@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block css %}
-<link href="{% static '/css/sign_up.css' %}" rel="stylesheet" />
 {% endblock %}
 
 {% block content %}
@@ -188,14 +187,6 @@
             </li>
             {% endif %}
             
-            <li class="page-item">
-                <div class="input-group">
-                    <input type="number" class="form-control col-auto" placeholder="Enter page number"
-                        aria-label="Enter page number" id="jump-page-input">
-                    <button class="btn btn-outline-secondary" type="button" onclick="jumpToPage()">Jump</button>
-                </div>
-            </li>
-        </ul>
     </nav>
 
 </div>
@@ -206,12 +197,6 @@
 
 {% block js %}
 <script>
-    function jumpToPage() {
-        var page = document.getElementById('jump-page-input').value;
-        var url = new URL(window.location.href);
-        url.searchParams.set('page', page);
-        window.location.href = url.href;
-    }
 
 $(document).ready(function() {
     $('.status-form').submit(function(event) {
