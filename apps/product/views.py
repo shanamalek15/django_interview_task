@@ -3,21 +3,22 @@ from django.http import HttpResponse, JsonResponse
 # Create your views here.
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, View, FormView
+from django.views.generic import *
 from .models import Category, Product
 from .forms import *
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 import csv
 from . tasks import generate_dummy_products_data
-
+from django.utils.decorators import method_decorator
+from .permissions import *
 # Category Views
 class CategoryListView(LoginRequiredMixin, ListView):
     model = Category
     template_name = 'category_list.html'
     context_object_name = 'categories'
     paginate_by = 10
-
+    
 class CategoryCreateView(LoginRequiredMixin, CreateView):
     model = Category
     form_class = CategoryForm
@@ -28,18 +29,21 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.created_by = self.request.user
         return super().form_valid(form)
-
+    
+@method_decorator(can_update_delete_category_view, name='dispatch')
 class CategoryUpdateView(LoginRequiredMixin, UpdateView):
     model = Category
     form_class = CategoryForm
     template_name = 'category_form.html'
     success_url = reverse_lazy('product:category-list')
-
+    
+@method_decorator(can_update_delete_category_view, name='dispatch')
 class CategoryDeleteView(LoginRequiredMixin,DeleteView):
     model = Category
     template_name = 'category_confirm_delete.html'
     success_url = reverse_lazy('product:category-list')
     
+@method_decorator(can_update_delete_category_view, name='dispatch')
 class CategoryDetailView(LoginRequiredMixin, DetailView):
     model = Category
     template_name = 'category_detail.html'
@@ -62,7 +66,6 @@ class ProductListView(LoginRequiredMixin, ListView):
         else:  # For agents
             return Product.objects.filter(created_by=user).order_by('id')
     
-
 class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
@@ -83,25 +86,27 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
         return super().form_valid(form)
 
-    
+@method_decorator(can_update_delete_view_product, name='dispatch')
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
     template_name = 'product_form.html'
     success_url = reverse_lazy('product:product-list')
 
+@method_decorator(can_update_delete_view_product, name='dispatch')
 class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
     template_name = 'product_confirm_delete.html'
     success_url = reverse_lazy('product:product-list')
     
-
+@method_decorator(can_update_delete_view_product, name='dispatch')
 class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
     template_name = 'product_detail.html'
     context_object_name = 'product'
-    
-class ProductApprovalUpdateView(UpdateView):
+
+@method_decorator(can_give_approval_product, name='dispatch')
+class ProductApprovalUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     form_class = ProductApprovalForm
     template_name = 'product_approval_update.html'
@@ -117,21 +122,29 @@ class ProductApprovalUpdateView(UpdateView):
         return response
     
     
-class ExportProductsView(View):
+class ExportProductsView(LoginRequiredMixin, View):
     
     def get(self, request):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="products.csv"'
         writer = csv.writer(response)
-        writer.writerow(['Title', 'Category', 'Description', 'Price', 'Status', 'Created At', 'Updated At', 'Created By'])
-        
+        writer.writerow(['Title', 'Category', 'Description', 'Price', 'Status', 'Created By'])
+        if request.user.role == 'admin':
+            products =  Product.objects.all().order_by('id')
+        elif request.user.role == 'staff':
+            # Staff can see their own products and products created by agents
+            products =  Product.objects.filter(created_by__role='agent').order_by('id') | Product.objects.filter(created_by=user).order_by('id')
+        else:  # For agents
+            products = Product.objects.filter(created_by=request.user).order_by('id')
+    
         products = Product.objects.all().select_related('category', 'created_by')
         for product in products:
-            writer.writerow([product.title, product.category.name, product.description, product.price, product.get_status_display(), product.created_at, product.updated_at, product.created_by.username])
+            writer.writerow([product.title, product.category.name, product.description, product.price,
+                             product.get_status_display(),  product.created_by.email])
         
         return response
     
-class GenerateDummyProductsView(FormView):
+class GenerateDummyProductsView(LoginRequiredMixin, FormView):
     template_name = 'generate_product_form.html'
     form_class = DummyProductForm
     success_url = reverse_lazy('product:product-list')
@@ -144,8 +157,8 @@ class GenerateDummyProductsView(FormView):
         messages.success(self.request, f'Started generating {num_products} dummy products.')
         return super().form_valid(form)
     
-    
-class ProductApprovalView(View):
+@method_decorator(can_give_approval_product, name='dispatch')
+class ProductApprovalView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         product_id = request.POST.get('product_id')
         new_status = request.POST.get('status')

@@ -7,8 +7,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="Portal - Bootstrap 5 Admin Dashboard Template For Developers">
-	<meta name="author" content="Xiaoying Riley at 3rd Wave Media">
+	<meta name="author" content="Shana Malek">
 	<link rel="shortcut icon" href="favicon.ico">
 	<link rel="stylesheet" href="{% static 'css/libs/bootstrap.min.css' %}">
 	<link rel="stylesheet" href="{% static 'css/libs/sweetalert2.min.css' %}">
@@ -69,6 +68,7 @@
 				</div>
 				<nav id="app-nav-main" class="app-nav app-nav-main flex-grow-1">
 					<ul class="app-menu list-unstyled accordion" id="menu-accordion">
+						{% if user.role in 'admin,staff,agent' %}
 						<li class="nav-item">
 
 							<a class="nav-link active" href="{% url 'product:product-list' %}">
@@ -78,6 +78,9 @@
 								<span class="nav-link-text">Product</span>
 							</a>
 						</li>
+						{% endif %}
+						{% if user.role in 'admin,staff' %}
+
 						<li class="nav-item">
 
 							<a class="nav-link active" href="{% url 'product:category-list' %}">
@@ -87,6 +90,9 @@
 								<span class="nav-link-text">Categories</span>
 							</a>
 						</li>
+						{% endif %}
+						{% if user.role == 'admin' %}
+
 						<li class="nav-item">
 
 							<a class="nav-link active" href="{% url 'authentication:user-list' %}">
@@ -95,6 +101,8 @@
 								</span>
 								<span class="nav-link-text">Users</span>
 							</a>
+						</li>
+						<li class="nav-item">
 
 							<a class="nav-link active" href="{% url 'product:generate-dummy-products' %}">
 								<span class="nav-icon">
@@ -103,6 +111,8 @@
 								<span class="nav-link-text">Generate Products</span>
 							</a>
 						</li>
+						{% endif %}
+
 					</ul>
 				</nav>
 
@@ -116,8 +126,6 @@
 		<div class="app-content pt-3">
 			<div class="container-fluid">
 				{% block content %}
-
-
 				{% endblock %}
 			</div>
 		</div>

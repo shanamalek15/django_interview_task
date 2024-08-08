@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'fontawesome.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/libs/bootstrap.min.css' %}">
+  <title>Document</title>
+</head>
+
+<body class="bg-dark text-white">
+  <div class="container p-5 error-wrapper">
+    <div class="row ">
+      <div class="col-md-12 text-center">
+        <div class="error-heading">
+          <h1 class="headline text-warning">403</h1>
+        </div>
+      </div>
+      <div class="col-md-12 text-center">
+        <h3>OPPSSS!!!! Sorry...</h3>
+        <p>Sorry, your access is refused due to security reasons of our server and also our sensitive data.<br />Please
+          go back to the previous page to continue browsing.</p>
+        <div><a class="btn btn-success btn-lg" href="{% url 'product:product-list' %}">BACK TO HOME PAGE</a></div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

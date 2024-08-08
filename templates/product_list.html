@@ -51,7 +51,9 @@
                                 <th class="cell text-center">Updated At</th>
                                 <th class="cell text-center">Created By</th>
                                 <th class="cell text-center">Description</th>
+                                {% if user.role in 'admin,staff' %}
                                 <th class="cell text-center">Approval</th>
+                                {% endif %}
                                 <th class="cell text-center">Actions</th>
                             </tr>
                         </thead>
@@ -67,6 +69,8 @@
                                 <td class="cell text-center">{{ product.updated_at }}</td>
                                 <td class="cell text-center">{{ product.created_by.email }}</td>
                                 <td class="cell text-center">{{ product.description }}</td>
+                                {% if user.role in 'admin,staff' %}
+
                                 <td class="cell text-center">     
                                     {% if product.status == 'draft' %}
                                     <form class="d-inline-block status-form" method="post" action="{% url 'product:product-approval' product.id %}">
@@ -108,6 +112,7 @@
                                         <button type="submit" class="btn btn-sm btn-success approval-btn">Approve</button>
                                     </form>
                                     {% endif %}</td>
+                                {% endif %}
                                 <td class="cell text-center">
                                     <a class="btn btn-sm action-btn" href="{% url 'product:product-detail' product.id %}"><i class="fa-solid fa-eye"></i>View</a>
                                     <a class="btn btn-sm action-btn" href="{% url 'product:product-update' product.id %}"><i class="fa-solid fa-pencil"></i>Edit</a>
@@ -201,7 +206,6 @@
 
 {% block js %}
 <script>
-    alert("<>>>>>>>>.")
     function jumpToPage() {
         var page = document.getElementById('jump-page-input').value;
         var url = new URL(window.location.href);
@@ -211,7 +215,6 @@
 
 $(document).ready(function() {
     $('.status-form').submit(function(event) {
-        alert("<>>>>>>>>>.")
         event.preventDefault(); // Prevent the default form submission
 
         var form = $(this);

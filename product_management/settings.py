@@ -51,8 +51,6 @@ DJANGO_APPS = [
 PROJECT_APPS = [
     'apps.product',
     'apps.user_auth',
-    # 'celery'
-
 ]
 
 INSTALLED_APPS =  DJANGO_APPS + PROJECT_APPS
@@ -161,9 +159,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your_email@gmail.com'
-EMAIL_HOST_PASSWORD = 'your_password'
-
+EMAIL_HOST_USER = 'shanamalek15@gmail.com'
+EMAIL_HOST_PASSWORD = 'xuiv ntiq yqvs plhn'
 
 
 AUTHENTICATION_BACKENDS = [
