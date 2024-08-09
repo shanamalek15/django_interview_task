@@ -2,6 +2,22 @@
 {% load static %}
 
 {% block content %}
+<style>
+
+.not-visible{
+        display: none;
+    }
+    #progressWrapper {
+        width: 100%;
+        background-color: #f3f3f3;
+    }
+
+    #progressBar {
+        width: 0;
+        height: 20px;
+        background-color: #4caf50;
+    }
+</style>
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -67,6 +83,11 @@
                             {% endif %}
                         </div>
 
+                        <!-- <div id="progressWrapper">
+                            <div id="progressBar"></div>
+                        </div> -->
+                    <div class="not-visible progress" id="progress"></div>
+
                         <div class="mb-3 text-right">
                             <button type="submit" class="btn app-btn-primary">
                                 {% if form.instance.pk %}
@@ -86,5 +107,115 @@
     </div>
 </div>
 
+
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function() {
+        const uploadForm = document.getElementById('product-form');
+        const input_file = document.getElementById('video');
+        const progress_bar = document.getElementById('progress');
+$("#product-form").submit(function(e){
+    e.preventDefault();
+    $form = $(this)
+    var formData = new FormData(this);
+    const media_data = input_file.files[0];
+    if(media_data != null){
+        console.log(media_data);
+        progress_bar.classList.remove("not-visible");
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'product:product-create' %}",
+        data: formData,
+        dataType: 'json',
+        beforeSend: function(){
+
+        },
+        xhr:function(){
+            const xhr = new window.XMLHttpRequest();
+            xhr.upload.addEventListener('progress', e=>{
+                if(e.lengthComputable){
+                    const percentProgress = (e.loaded/e.total)*100;
+                    console.log(percentProgress);
+                    progress_bar.innerHTML = `<div class="progress-bar progress-bar-striped bg-success" 
+            role="progressbar" style="width: ${percentProgress}%" aria-valuenow="${percentProgress}" aria-valuemin="0" 
+            aria-valuemax="100"></div>`
+                }
+            });
+            return xhr
+        },
+        success: function(response){
+            console.log(response);
+            uploadForm.reset()
+            progress_bar.classList.add('not-visible')
+            window.location.href = '/product/'
+        },
+        error: function(err){
+            console.log(err);
+        },
+        cache: false,
+        contentType: false,
+        processData: false,
+    });
+});
+    })
+</script>
+<!-- <script>
+    $(document).ready(function() {
+        $('#product-form').submit(function(event) {
+    event.preventDefault();
+
+    let videoFile = $('#video')[0].files[0];
+    let chunkSize = 2 * 1024 * 1024;  // 2MB per chunk
+    let totalChunks = Math.ceil(videoFile.size / chunkSize);
+    let chunkNumber = 0;
+    let uploadedSize = 0;  // Track the total size of uploaded chunks
+
+    function uploadChunk(start, end) {
+        let chunk = videoFile.slice(start, end);
+        let formData = new FormData();
+        formData.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').val()); // CSRF token
+        formData.append('chunk', chunk);
+        formData.append('chunk_number', chunkNumber);
+        formData.append('total_chunks', totalChunks);
+
+        // Append other form data (if necessary)
+        $('#product-form').serializeArray().forEach(function(field) {
+            formData.append(field.name, field.value);
+        });
+
+        $.ajax({
+            url: "{% url 'product:product-create' %}",
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                uploadedSize += chunk.size;  // Update the total uploaded size
+                chunkNumber++;  // Increment the chunk number
+
+                // Calculate progress based on uploaded size
+                let progress = Math.round((uploadedSize / videoFile.size) * 100);
+                console.log(`Uploaded ${uploadedSize} bytes of ${videoFile.size}, progress: ${progress}%`);
+                $('#progressBar').css('width', progress + '%');
+
+                if (chunkNumber < totalChunks) {
+                    uploadChunk(chunkNumber * chunkSize, Math.min((chunkNumber + 1) * chunkSize, videoFile.size));
+                }
+                
+            },
+            error: function(response) {
+                console.error("Upload failed at chunk ", chunkNumber);
+            }
+        });
+    }
+
+    uploadChunk(0, chunkSize);
+});
+}); -->
+</script>
 
 {% endblock %}

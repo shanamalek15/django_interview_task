@@ -16,6 +16,7 @@ import json
 import base64
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
+import os
 # Category Views
 class CategoryListView(LoginRequiredMixin, ListView):
     model = Category
@@ -87,7 +88,34 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
             form.instance.status = 'approved'
         else:
             form.instance.status = 'draft'
-            
+        product = form.save()
+        print("<>>>>>>>>>>>>>>>", self.request.POST)
+        print("<>>>>>>>>>>>>>>>", self.request.FILES)
+        # if 'video' in self.request.FILES:
+        #     video_file = self.request.FILES['video']
+        #     mime_type, _ = mimetypes.guess_type(video_file.name)
+        #     print('mime_type: ', mime_type)
+        #     if mime_type and mime_type.startswith('video'):
+        #         # Handle video chunk upload
+        #         temp_video_dir = os.path.join('media', 'temp_videos')
+        #         print('temp_video_dir: ', temp_video_dir)
+
+        #         # Create the directory if it doesn't exist
+        #         if not os.path.exists(temp_video_dir):
+        #             os.makedirs(temp_video_dir)
+
+        #         video_path = os.path.join(temp_video_dir, f'{product.id}_video')
+        #         print('video_path: ', video_path)
+        #         with open(video_path, 'ab') as f:
+        #             f.write(video_file.read())
+
+        #         if int(self.request.POST.get('chunk_number')) == int(self.request.POST.get('total_chunks')) - 1:
+        #             print("<>>>>>>>>>>>>>>>>>>>>>>>", self.request.POST.get('chunk_number'))
+        #             upload_video_task.delay(product.id, video_file.name)
+
+        #         return JsonResponse({'product_id': product.id, 'status': 'processing'})
+
+        # return super().form_valid(form)
         product = form.save()
         print('product: ', product)
         if self.request.FILES.get('video'):
@@ -100,12 +128,15 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
                 # Trigger the Celery task for video processing
                 upload_video_task.delay(product.id, video_file.name)
-                return super().form_valid(form)
+                # return super().form_valid(form)
+                return JsonResponse({'data':'Product Created'})
+        
+            return JsonResponse({'data':'Product Created'})
+
         else:
             # Process normally if it's not a video file
-            return super().form_valid(form)
+            return JsonResponse({'data':'Product Created'})
 
-        return super().form_valid(form)
 
 @method_decorator(can_update_delete_view_product, name='dispatch')
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
