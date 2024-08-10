@@ -22,8 +22,11 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="app-card app-card-settings shadow-sm p-4">
+
+                <div id="form-errors"  style="display: none; color: red;"></div>
                 <div class="app-card-body">
-                    <form id="product-form" method="post" enctype="multipart/form-data" class="settings-form">
+                    <form id="product-form" method="post" enctype="multipart/form-data" class="settings-form" 
+                    action="{% if form.instance.pk %}{% url 'product:product-update' form.instance.pk %}{% else %}{% url 'product:product-create' %}{% endif %}">
                         {% csrf_token %}
                         
                         <div class="mb-3">
@@ -83,10 +86,7 @@
                             {% endif %}
                         </div>
 
-                        <!-- <div id="progressWrapper">
-                            <div id="progressBar"></div>
-                        </div> -->
-                    <div class="not-visible progress" id="progress"></div>
+                    <div class="mt-2 not-visible progress" id="progress"></div>
 
                         <div class="mb-3 text-right">
                             <button type="submit" class="btn app-btn-primary">
@@ -116,51 +116,88 @@
         const uploadForm = document.getElementById('product-form');
         const input_file = document.getElementById('video');
         const progress_bar = document.getElementById('progress');
-$("#product-form").submit(function(e){
-    e.preventDefault();
-    $form = $(this)
-    var formData = new FormData(this);
-    const media_data = input_file.files[0];
-    if(media_data != null){
-        console.log(media_data);
-        progress_bar.classList.remove("not-visible");
-    }
+        $("#product-form").submit(function(e){
+            $('#form-errors').empty();
+            e.preventDefault();
+            $form = $(this)
+            var formData = new FormData(this);
+            const media_data = input_file.files[0];
+            if(media_data != null){
+                console.log(media_data);
+                progress_bar.classList.remove("not-visible");
+            }
+            
 
-    $.ajax({
-        type: 'POST',
-        url: "{% url 'product:product-create' %}",
-        data: formData,
-        dataType: 'json',
-        beforeSend: function(){
+            $.ajax({
+                type: 'POST',
+                // url: "{% url 'product:product-create' %}",
+                url: $(this).attr('action'),
+                data: formData,
+                dataType: 'json',
+                beforeSend: function(){
 
-        },
-        xhr:function(){
-            const xhr = new window.XMLHttpRequest();
-            xhr.upload.addEventListener('progress', e=>{
-                if(e.lengthComputable){
-                    const percentProgress = (e.loaded/e.total)*100;
-                    console.log(percentProgress);
-                    progress_bar.innerHTML = `<div class="progress-bar progress-bar-striped bg-success" 
-            role="progressbar" style="width: ${percentProgress}%" aria-valuenow="${percentProgress}" aria-valuemin="0" 
-            aria-valuemax="100"></div>`
-                }
+                },
+                xhr:function(){
+                    const xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', e=>{
+                        if(e.lengthComputable){
+                            const percentProgress = (e.loaded/e.total)*100;
+                            console.log(percentProgress);
+                            progress_bar.innerHTML = `<div class="progress-bar progress-bar-striped bg-success" 
+                    role="progressbar" style="width: ${percentProgress}%" aria-valuenow="${percentProgress}" aria-valuemin="0" 
+                    aria-valuemax="100"></div>`
+                        }
+                    });
+                    return xhr
+                },
+                success: function(response){
+                    // console.log(response);
+                    uploadForm.reset()
+                    progress_bar.classList.add('not-visible')
+                    // window.location.href = '/product/'
+
+                    Swal.fire({
+                    title: 'Success!',
+                    text: response.message,
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                        window.location.href = '/product/'
+                    });
+                },
+                error: function(errors){
+                    var errorHtml = '<ul>';
+                    var error = JSON.parse(errors.responseText);
+                    console.log("Error response: ", error);
+
+                    if (error.errors) {
+                        console.log("<error.errors>>>>>>", error.errors)
+
+                        $.each(error.errors, function(field, messages) {
+                            console.log("Field:", field, "Messages:", messages);
+                            $.each(messages, function(index, message) {
+                                errorHtml += '<li>' + field + ': ' + message + '</li>';
+                            });
+                        });
+                    } else if (error.message) {
+                        errorHtml += '<li>' + error.message + '</li>';
+                    } else {
+                        errorHtml += '<li>An unknown error occurred.</li>';
+                    }
+
+                    errorHtml += '</ul>';
+                    console.log("<>>>>>>", errorHtml)
+                    $('#form-errors').html(errorHtml).show();
+                    $('#progress').addClass('not-visible')
+                    $form.reset()
+
+                },
+                cache: false,
+                contentType: false,
+                processData: false,
             });
-            return xhr
-        },
-        success: function(response){
-            console.log(response);
-            uploadForm.reset()
-            progress_bar.classList.add('not-visible')
-            window.location.href = '/product/'
-        },
-        error: function(err){
-            console.log(err);
-        },
-        cache: false,
-        contentType: false,
-        processData: false,
-    });
-});
+        });
     })
 </script>
 <!-- <script>

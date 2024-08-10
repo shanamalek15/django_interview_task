@@ -79,65 +79,36 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
    
     def form_valid(self, form):
-        category_id = self.request.POST.get('category')
-        form.instance.category_id = category_id
         form.instance.created_by = self.request.user
-
         # Set the product status based on the user's role
         if self.request.user.role in ['admin', 'staff']:
             form.instance.status = 'approved'
         else:
             form.instance.status = 'draft'
         product = form.save()
-        print("<>>>>>>>>>>>>>>>", self.request.POST)
-        print("<>>>>>>>>>>>>>>>", self.request.FILES)
-        # if 'video' in self.request.FILES:
-        #     video_file = self.request.FILES['video']
-        #     mime_type, _ = mimetypes.guess_type(video_file.name)
-        #     print('mime_type: ', mime_type)
-        #     if mime_type and mime_type.startswith('video'):
-        #         # Handle video chunk upload
-        #         temp_video_dir = os.path.join('media', 'temp_videos')
-        #         print('temp_video_dir: ', temp_video_dir)
-
-        #         # Create the directory if it doesn't exist
-        #         if not os.path.exists(temp_video_dir):
-        #             os.makedirs(temp_video_dir)
-
-        #         video_path = os.path.join(temp_video_dir, f'{product.id}_video')
-        #         print('video_path: ', video_path)
-        #         with open(video_path, 'ab') as f:
-        #             f.write(video_file.read())
-
-        #         if int(self.request.POST.get('chunk_number')) == int(self.request.POST.get('total_chunks')) - 1:
-        #             print("<>>>>>>>>>>>>>>>>>>>>>>>", self.request.POST.get('chunk_number'))
-        #             upload_video_task.delay(product.id, video_file.name)
-
-        #         return JsonResponse({'product_id': product.id, 'status': 'processing'})
-
-        # return super().form_valid(form)
-        product = form.save()
-        print('product: ', product)
-        if self.request.FILES.get('video'):
-            video_file = self.request.FILES.get('video')
-            print('video_file: ', video_file)
+        video_file = self.request.FILES.get('video')
+        if video_file:
             mime_type, _ = mimetypes.guess_type(video_file.name)
+            print('mime_type: ', mime_type)
             if mime_type and mime_type.startswith('video'):
-                # Save the form instance to get the product ID
-                # product = form.save(commit=False)
+                try:
+                    upload_video_task.delay(product.id, video_file.read(), video_file.name)
+                    return JsonResponse({'status': 'success', 'message': 'Product Created'}, status=200)
+                except Exception as e:
+                    return JsonResponse({'status': 'error', 'message': f'Product created but video processing failed: {str(e)}'}, status=500)
 
-                # Trigger the Celery task for video processing
-                upload_video_task.delay(product.id, video_file.name)
-                # return super().form_valid(form)
-                return JsonResponse({'data':'Product Created'})
+        return JsonResponse({'status': 'success', 'message': 'Product Created'}, status=200)
         
-            return JsonResponse({'data':'Product Created'})
+    def form_invalid(self, form):
+        return JsonResponse({'errors': form.errors}, status=400)
 
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
         else:
-            # Process normally if it's not a video file
-            return JsonResponse({'data':'Product Created'})
-
-
+            return self.form_invalid(form)
+        
 @method_decorator(can_update_delete_view_product, name='dispatch')
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
@@ -145,6 +116,30 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'product_form.html'
     success_url = reverse_lazy('product:product-list')
 
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        # Set the product status based on the user's role
+        if self.request.user.role in ['admin', 'staff']:
+            form.instance.status = 'approved'
+        else:
+            form.instance.status = 'draft'
+        product = form.save()
+        video_file = self.request.FILES.get('video')
+        if video_file:
+            mime_type, _ = mimetypes.guess_type(video_file.name)
+            print('mime_type: ', mime_type)
+            if mime_type and mime_type.startswith('video'):
+                try:
+                    upload_video_task.delay(product.id, video_file.read(), video_file.name)
+                    return JsonResponse({'status': 'success', 'message': 'Product Updated'}, status=200)
+                except Exception as e:
+                    return JsonResponse({'status': 'error', 'message': f'Product Updated but video processing failed: {str(e)}'}, status=500)
+
+        return JsonResponse({'status': 'success', 'message': 'Product Updated'}, status=200)
+
+    def form_invalid(self, form):
+        return JsonResponse({'errors': form.errors}, status=400)
+    
 @method_decorator(can_update_delete_view_product, name='dispatch')
 class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
@@ -258,10 +253,8 @@ class EncryptionFormView(View):
             data =  json.loads(request.body).get('data')
             print('data: ', data)
             key = base64.b64decode("bXVzdGJlMTZieXRlc2tleQ==") 
-            # Encrypt the plain text
             encrypted_data = encrypt_aes(data, key)
             print('encrypted_data: ', encrypted_data)
-
             if encrypted_data is None:
                 return JsonResponse({'success': False, 'error': 'Encryption failed'})
 
@@ -281,7 +274,6 @@ class DecryptionFormView(View):
             key = base64.b64decode("bXVzdGJlMTZieXRlc2tleQ==")  # Replace with your Base64 encoded key
             decrypted_data = decrypt_aes(encrypted_data, key)
             print('decrypted_data: ', decrypted_data)
-
             if decrypted_data is None:
                 return JsonResponse({'success': False, 'error': 'Decryption failed'})
 

@@ -102,6 +102,9 @@
                             icon: 'success',
                             title: 'Success',
                             text: 'Data encrypted\n' + response.data,
+                            showConfirmButton: false,
+                            timer: 1200
+
                         })
                         $('#encrypted-data').text(response.data)
                         $('.encryption-form')[0].reset()
@@ -148,6 +151,7 @@
                             title: 'Success',
                             text: `Data decrypted : \n Name : ${response.data.name}
                             \n Title : ${response.data.title}\n \n Number : ${response.data.number}`,
+                        
                         })
                         // Populate the decrypted data into the form
                         $('.encryption-form #name').val(response.data.name);

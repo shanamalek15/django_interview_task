@@ -25,12 +25,10 @@ def validate_video_size(value):
     mime_type, encoding = mimetypes.guess_type(value.name)
     print('mime_type: ', mime_type, encoding)
     type = mime_type.split('/')[0]
-    print('type: ', type)
     if type == 'video':
-    # Check the file size to ensure it's not larger than 20 MB
         limit = 20 * 1024 * 1024  # 20 MB
         if value.size > limit:
-            print('alue.size: ', value.size)
+            print('>>>>>>>>>>>>>>>>: ', value.size)
             raise ValidationError('Video file is too large. Maximum size is 20MB.')
  
 class Product(models.Model):

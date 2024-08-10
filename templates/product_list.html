@@ -210,21 +210,29 @@ $(document).ready(function() {
             method: 'POST',
             data: formData,
             success: function(response) {
-                if (response.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Status updated to ' + response.status,
-                    }).then(() => {
-                        location.reload(); // Reload the page on success
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: response.error || 'An error occurred.',
-                    });
+                console.log("<>>>>>>>>>>>", response.status)
+                let title, text, icon;
+                if (response.status === 'approved') {
+                    title = 'Success!';
+                    text = 'Product has been approved and created successfully.';
+                    icon = 'success';
+                } else if (response.status === 'draft') {
+                    title = 'Draft Saved';
+                    text = 'Product has been saved as a draft.';
+                    icon = 'info';
+                } else if (response.status === 'rejected') {
+                    title = 'Rejected';
+                    text = 'Product was rejected.';
+                    icon = 'error';
                 }
+                Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: icon,
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.href = '/product/';
+                });
             },
             error: function() {
                 Swal.fire({
