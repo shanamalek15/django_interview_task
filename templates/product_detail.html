@@ -22,7 +22,7 @@
                             <p class="card-text"><strong>Status:</strong> {{ product.get_status_display }}</p>
                             <p class="card-text"><strong>Created At:</strong> {{ product.created_at }}</p>
                             <p class="card-text"><strong>Updated At:</strong> {{ product.updated_at }}</p>
-                            <p class="card-text"><strong>Created By:</strong> {{ product.created_by.username }}</p>
+                            <p class="card-text"><strong>Created By:</strong> {{ product.created_by.email }}</p>
                         </div>
                         <div class="col-md-6">
                             <p class="card-text"><strong>Description:</strong>{{ product.description }}</p>

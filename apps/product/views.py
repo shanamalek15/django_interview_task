@@ -18,12 +18,26 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 import os
 # Category Views
+@method_decorator(agent_restriction, name='dispatch')
 class CategoryListView(LoginRequiredMixin, ListView):
     model = Category
     template_name = 'category_list.html'
     context_object_name = 'categories'
     paginate_by = 10
     
+    
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'admin':
+            return Category.objects.all().order_by('id')
+        elif user.role == 'staff':
+            # Staff can see their own products and products created by agents
+            return Category.objects.filter(created_by__role='agent').order_by('id') \
+                | Category.objects.filter(created_by=user).order_by('id')
+        else:  # For agents
+            return []
+
+@method_decorator(agent_restriction, name='dispatch')
 class CategoryCreateView(LoginRequiredMixin, CreateView):
     model = Category
     form_class = CategoryForm
@@ -41,6 +55,8 @@ class CategoryUpdateView(LoginRequiredMixin, UpdateView):
     form_class = CategoryForm
     template_name = 'category_form.html'
     success_url = reverse_lazy('product:category-list')
+    
+    
     
 @method_decorator(can_update_delete_category_view, name='dispatch')
 class CategoryDeleteView(LoginRequiredMixin,DeleteView):
