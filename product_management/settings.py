@@ -51,6 +51,7 @@ DJANGO_APPS = [
 PROJECT_APPS = [
     'apps.product',
     'apps.user_auth',
+    'rest_framework'
 ]
 
 INSTALLED_APPS =  DJANGO_APPS + PROJECT_APPS
@@ -65,7 +66,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'apps.user_auth.rediretAuthMiddleware.RedirectAuthenticatedUserMiddleware',
-
+    # 'apps.user_auth.aesEncryptionMiddleware.AesEncryptionMiddleware'
 ]
 
 ROOT_URLCONF = 'product_management.urls'

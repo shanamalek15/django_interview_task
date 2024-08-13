@@ -91,7 +91,8 @@
                 url: '/product/encryption/',
                 method: 'POST',
                 // data: JSON.stringify({ data: encryptedData }), // Sending encrypted data
-                data: JSON.stringify({ data: jsonData }), // Sending encrypted data
+                // data: JSON.stringify({ data: jsonData }), // Sending encrypted data
+                data: JSON.stringify(jsonData), // Sending encrypted data
                 contentType: "application/json",
                 headers: {
                     'X-CSRFToken': csrfToken
@@ -101,10 +102,8 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Success',
-                            text: 'Data encrypted\n' + response.data,
-                            showConfirmButton: false,
-                            timer: 1200
-
+                            text: 'Copy below text and post in Ciphertext input field \n Data encrypted :\n' + response.data,
+                            showConfirmButton: true,
                         })
                         $('#encrypted-data').text(response.data)
                         $('.encryption-form')[0].reset()
@@ -139,7 +138,8 @@
             $.ajax({
                 url: '/product/decryption/',
                 method: 'POST',
-                data: JSON.stringify({ data: ciphertext }),
+                // data: JSON.stringify({ data: ciphertext }),
+                data: JSON.stringify(ciphertext),
                 contentType: "application/json",
                 headers: {
                     'X-CSRFToken': csrfToken
@@ -153,12 +153,7 @@
                             \n Title : ${response.data.title}\n \n Number : ${response.data.number}`,
                         
                         })
-                        // Populate the decrypted data into the form
-                        $('.encryption-form #name').val(response.data.name);
-                        $('.encryption-form #title').val(response.data.title);
-                        $('.encryption-form #number').val(response.data.number);
                         $('.decryption-form')[0].reset()
-
                         // Show the decrypted data section
                     } else {
                         Swal.fire({

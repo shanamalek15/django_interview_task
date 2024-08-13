@@ -17,6 +17,9 @@ import base64
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 import os
+from .serializer import *
+from rest_framework.generics import ListCreateAPIView
+
 # Category Views
 @method_decorator(agent_restriction, name='dispatch')
 class CategoryListView(LoginRequiredMixin, ListView):
@@ -255,6 +258,7 @@ def decrypt_aes(encrypted_data, key):
     try:
         cipher = AES.new(key, AES.MODE_ECB)
         decrypted_data = cipher.decrypt(base64.b64decode(encrypted_data))
+        print('decrypted_data: ', decrypted_data)
         padding_length = decrypted_data[-1]
         decrypted_data = decrypted_data[:-padding_length]
         return decrypted_data.decode('utf-8')
@@ -265,8 +269,8 @@ class EncryptionFormView(View):
     
     def post(self, request):
         try:
-            # Extract data from the request
-            data =  json.loads(request.body).get('data')
+            print("TYPE OF ",request.body, type(request.body))
+            data =  json.loads(request.body)
             print('data: ', data)
             key = base64.b64decode("bXVzdGJlMTZieXRlc2tleQ==") 
             encrypted_data = encrypt_aes(data, key)
@@ -281,12 +285,13 @@ class EncryptionFormView(View):
 
 
 
-
 class DecryptionFormView(View):
     
     def post(self, request):
         try:
-            encrypted_data = json.loads(request.body).get('data')
+            # encrypted_data = json.loads(request.body).get('data')
+            encrypted_data = json.loads(request.body)
+            print('encrypted_data: ', encrypted_data)
             key = base64.b64decode("bXVzdGJlMTZieXRlc2tleQ==")  # Replace with your Base64 encoded key
             decrypted_data = decrypt_aes(encrypted_data, key)
             print('decrypted_data: ', decrypted_data)
@@ -299,3 +304,8 @@ class DecryptionFormView(View):
 
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
+        
+        
+class ProductGenericListCreateAPIView(ListCreateAPIView):
+    serializer_class = ProductSerializer
+    queryset = Product.objects.all()
