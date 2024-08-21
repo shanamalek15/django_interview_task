@@ -91,12 +91,12 @@
                                         <input type="hidden" name="status" value="draft">
                                         <button type="submit" class="btn btn-sm btn-warning approval-btn">Draft</button>
                                     </form>
-                                    <form class="d-inline-block status-form" method="post" action="{% url 'product:product-approval' product.id %}">
+                                    <!-- <form class="d-inline-block status-form" method="post" action="{% url 'product:product-approval' product.id %}">
                                         {% csrf_token %}
                                         <input type="hidden" name="product_id" value="{{ product.id }}">
                                         <input type="hidden" name="status" value="rejected">
                                         <button type="submit" class="btn btn-sm btn-danger approval-btn">Reject</button>
-                                    </form>
+                                    </form> -->
                                     {% elif product.status == 'rejected' %}
                                     <form class="d-inline-block status-form" method="post" action="{% url 'product:product-approval' product.id %}">
                                         {% csrf_token %}
@@ -104,12 +104,12 @@
                                         <input type="hidden" name="status" value="draft">
                                         <button type="submit" class="btn btn-sm btn-warning approval-btn">Draft</button>
                                     </form>
-                                    <form class="d-inline-block status-form" method="post" action="{% url 'product:product-approval' product.id %}">
+                                    <!-- <form class="d-inline-block status-form" method="post" action="{% url 'product:product-approval' product.id %}">
                                         {% csrf_token %}
                                         <input type="hidden" name="product_id" value="{{ product.id }}">
                                         <input type="hidden" name="status" value="approved">
                                         <button type="submit" class="btn btn-sm btn-success approval-btn">Approve</button>
-                                    </form>
+                                    </form> -->
                                     {% endif %}</td>
                                 {% endif %}
                                 <td class="cell text-center">
