@@ -8,6 +8,8 @@ from django.conf import settings
 
 def agent_restriction(view_func):
     def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(settings.LOGIN_URL)  
         if request.user.role == 'agent':
             raise PermissionDenied
         return view_func(request, *args, **kwargs)
