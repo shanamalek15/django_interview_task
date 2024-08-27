@@ -161,7 +161,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'shanamalek15@gmail.com'
-EMAIL_HOST_PASSWORD = 'xuiv ntiq yqvs plhn'
+EMAIL_HOST_PASSWORD = 'fdxj trvc vhmu pmvb'
 
 
 AUTHENTICATION_BACKENDS = [

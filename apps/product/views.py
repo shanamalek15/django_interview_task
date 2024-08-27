@@ -19,6 +19,7 @@ from Crypto.Util.Padding import pad, unpad
 import os
 from .serializer import *
 from rest_framework.generics import ListCreateAPIView
+from django.db.models import Q
 
 # Category Views
 @method_decorator(agent_restriction, name='dispatch')
@@ -86,9 +87,11 @@ class ProductListView(LoginRequiredMixin, ListView):
             return Product.objects.all().order_by('id')
         elif user.role == 'staff':
             # Staff can see their own products and products created by agents
-            return Product.objects.filter(created_by__role='agent').order_by('id') | Product.objects.filter(created_by=user).order_by('id')
+            return Product.objects.filter( Q(created_by__role='agent')
+                                          | Q(created_by__role='admin') 
+                                          | Q(created_by=user)).order_by('id')
         else:  # For agents
-            return Product.objects.filter(created_by=user).order_by('id')
+            return Product.objects.filter(Q(created_by=user) | Q(created_by__role='admin')).order_by('id')
     
 class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product

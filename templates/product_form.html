@@ -76,15 +76,29 @@
                                 </div>
                             {% endif %}
                         </div>
+                      
 
-                        <div class="mb-3">
-                            <label for="video" class="form-label">Video</label>
-                            <input type="file" class="form-control-file" id="video" name="video">
+                        <div class="mb-3 row col-md-12">
+                            <div class="col-md-6">
+                                <label for="video" class="form-label">Video</label>
+                                <input type="file" class="form-control-file" id="video" name="video" >
+                            </div>
+                            {% if product.video %}
+                            <div class="col-md-6 text-right">
+                                <div class="embed-responsive embed-responsive-16by9 text-right">
+                                    <video controls class="embed-responsive-item" style="width: 50%;">
+                                        <source src="{{ product.video.url }}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+                            </div>
+                            {% endif %}
                             {% if form.video.errors %}
                                 <div class="text-danger">
                                     {{ form.video.errors }}
                                 </div>
                             {% endif %}
+
                         </div>
 
                     <div class="mt-2 not-visible progress" id="progress"></div>

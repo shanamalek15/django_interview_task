@@ -14015,7 +14015,7 @@ button.close:focus {
 }
 
 .form-control {
-    padding-top: .6rem;
+    /* padding-top: .6rem; */
     padding-bottom: .6rem;
     height: 2.5rem;
     border-color: #e7e9ed;
