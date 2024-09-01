@@ -387,7 +387,6 @@
                 method: 'POST',
                 data: formData,
                 success: function (response) {
-                    console.log("<>>>>>>>>>>>", response.status)
                     let title, text, icon;
                     if (response.status === 'approved') {
                         title = 'Success!';
@@ -412,12 +411,10 @@
                     });
                 },
                 error: function (errors) {
-                    console.log("error=======", errors)
                     var error = JSON.parse(errors.responseText);
                     Swal.fire({
                         icon: 'error',
                         title: error.error,
-                        // text: 'An unexpected error occurred.',
                     });
                 }
             });

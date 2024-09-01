@@ -138,11 +138,9 @@
             var formData = new FormData(this);
             const media_data = input_file.files[0];
             if(media_data != null){
-                console.log(media_data);
                 progress_bar.classList.remove("not-visible");
             }
             
-
             $.ajax({
                 type: 'POST',
                 // url: "{% url 'product:product-create' %}",
@@ -166,7 +164,6 @@
                     return xhr
                 },
                 success: function(response){
-                    // console.log(response);
                     uploadForm.reset()
                     progress_bar.classList.add('not-visible')
                     // window.location.href = '/product/'
@@ -184,8 +181,6 @@
                 error: function(errors){
                     var errorHtml = '<ul>';
                     var error = JSON.parse(errors.responseText);
-                    console.log("Error response: ", error);
-
                     if (error.errors) {
                         console.log("<error.errors>>>>>>", error.errors)
 
@@ -215,59 +210,6 @@
         });
     })
 </script>
-<!-- <script>
-    $(document).ready(function() {
-        $('#product-form').submit(function(event) {
-    event.preventDefault();
 
-    let videoFile = $('#video')[0].files[0];
-    let chunkSize = 2 * 1024 * 1024;  // 2MB per chunk
-    let totalChunks = Math.ceil(videoFile.size / chunkSize);
-    let chunkNumber = 0;
-    let uploadedSize = 0;  // Track the total size of uploaded chunks
-
-    function uploadChunk(start, end) {
-        let chunk = videoFile.slice(start, end);
-        let formData = new FormData();
-        formData.append('csrfmiddlewaretoken', $('input[name="csrfmiddlewaretoken"]').val()); // CSRF token
-        formData.append('chunk', chunk);
-        formData.append('chunk_number', chunkNumber);
-        formData.append('total_chunks', totalChunks);
-
-        // Append other form data (if necessary)
-        $('#product-form').serializeArray().forEach(function(field) {
-            formData.append(field.name, field.value);
-        });
-
-        $.ajax({
-            url: "{% url 'product:product-create' %}",
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(response) {
-                uploadedSize += chunk.size;  // Update the total uploaded size
-                chunkNumber++;  // Increment the chunk number
-
-                // Calculate progress based on uploaded size
-                let progress = Math.round((uploadedSize / videoFile.size) * 100);
-                console.log(`Uploaded ${uploadedSize} bytes of ${videoFile.size}, progress: ${progress}%`);
-                $('#progressBar').css('width', progress + '%');
-
-                if (chunkNumber < totalChunks) {
-                    uploadChunk(chunkNumber * chunkSize, Math.min((chunkNumber + 1) * chunkSize, videoFile.size));
-                }
-                
-            },
-            error: function(response) {
-                console.error("Upload failed at chunk ", chunkNumber);
-            }
-        });
-    }
-
-    uploadChunk(0, chunkSize);
-});
-}); -->
-</script>
 
 {% endblock %}

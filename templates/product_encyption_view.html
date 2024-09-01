@@ -126,7 +126,6 @@
         // Encrypt button click event
         $('.encrypt-btn').click(function() {
             var productDiv = $(this).closest('.row');
-            console.log("<>>>>>>>>>>>>>", productDiv.find('.encryptdata').text)
             productDiv.find('.encryptdata').text('')
             var productData = {
                 title: productDiv.find('.title').text().replace('Name:', '').trim(),
@@ -143,7 +142,6 @@
                 success: function(response) {
                     console.log("response", response)
                     if (response.success) {
-                        console.log("response.data", response.data)
                         productDiv.find('.encryptdata').text(response.data);
                     } else {
                         alert('Encryption failed: ' + response.error);

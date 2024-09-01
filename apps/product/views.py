@@ -323,10 +323,4 @@ class ProductEncryptionView(LoginRequiredMixin, ListView):
     context_object_name = 'products'
     paginate_by = 10
         
-    
-class ProductGetApiEncrypt(View):
-    
-    def post(self, request, data):
-        pass
-        
         
