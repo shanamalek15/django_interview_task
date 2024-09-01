@@ -20,7 +20,7 @@
                         Export Products
                     </a>
                 </div>
-               
+
                 <div class="col-auto">
                     <a type="button" class="btn btn-primary" href="{% url 'product:product-create' %}"
                         data-bs-target="#clerkCaseRegisterModel">
@@ -34,95 +34,245 @@
 </div>
 
 <div class="tab-content" id="orders-table-tab-content">
-    <div class="tab-pane fade show active" id="orders-all" role="tabpanel"
-        aria-labelledby="orders-all-tab">
-        <div class="card app-card app-card-orders-table shadow-sm mb-5">
-        <div class="card-body app-card-body">
-            <div class="table-responsive">
-                <table class="table app-table-hover mb-0 text-left text-nowrap table-bordered">
-                        <thead>
-                            <tr>
-                                <th class="cell">Title</th>
-                                <th class="cell text-center">Category</th>
-                                <th class="cell text-center">Price</th>
-                                <th class="cell text-center">Status</th>
-                                <th class="cell text-center">Created At</th>
-                                <th class="cell text-center">Updated At</th>
-                                <th class="cell text-center">Created By</th>
-                                <th class="cell text-center">Description</th>
-                                {% if user.role in 'admin,staff' %}
-                                <th class="cell text-center">Approval</th>
-                                {% endif %}
-                                <th class="cell text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for product in products %}
+    <div class="tab-pane fade show active" id="orders-all" role="tabpanel" aria-labelledby="orders-all-tab">
 
-                            <tr>
-                                <td class="cell">{{ product.title }}</td>
-                                <td class="cell text-center">{{ product.category.name }}</td>
-                                <td class="cell text-center">{{ product.price }}</td>
-                                <td class="cell text-center">{{ product.get_status_display }}</td>
-                                <td class="cell text-center">{{ product.created_at }}</td>
-                                <td class="cell text-center">{{ product.updated_at }}</td>
-                                <td class="cell text-center">{{ product.created_by.email }}</td>
-                                <td class="cell text-center">{{ product.description }}</td>
-                                {% if user.role in 'admin,staff' %}
 
-                                <td class="cell text-center">     
+        <ul class="nav nav-tabs row" id="myTab" role="tablist">
+            <li class="nav-item  col-md-4  col-sm-4 col-xs-4">
+                <a class="nav-link active" id="draft-tab" data-bs-toggle="tab" href="#draft" role="tab">Draft</a>
+            </li>
+            <li class="nav-item  col-md-4 col-sm-4 col-xs-4">
+                <a class="nav-link" id="rejected-tab" data-bs-toggle="tab" href="#rejected" role="tab">Rejected</a>
+            </li>
+            <li class="nav-item  col-md-4 col-sm-4 col-xs-4">
+                <a class="nav-link " id="approved-tab" data-bs-toggle="tab" href="#approved" role="tab">Approved</a>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="draft" role="tabpanel">
+                <div class="mt-2 card app-card app-card-orders-table shadow-sm mb-5">
+                    <div class="card-body app-card-body">
+                        <div class="table-responsive">
+                            <table class="table app-table-hover mb-0 text-left text-nowrap table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="cell">Title</th>
+                                        <th class="cell text-center">Category</th>
+                                        <th class="cell text-center">Price</th>
+                                        <th class="cell text-center">Status</th>
+                                        <th class="cell text-center">Created At</th>
+                                        <th class="cell text-center">Updated At</th>
+                                        <th class="cell text-center">Created By</th>
+                                        <th class="cell text-center">Description</th>
+                                        {% if user.role in 'admin,staff' %}
+                                        <th class="cell text-center">Approval</th>
+                                        {% endif %}
+                                        <th class="cell text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product in products %}
                                     {% if product.status == 'draft' %}
-                                    <form class="d-inline-block status-form" method="post" action="{% url 'product:product-approval' product.id %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="product_id" value="{{ product.id }}">
-                                        <input type="hidden" name="status" value="approved">
-                                        <button type="submit" class="btn btn-sm btn-success approval-btn">Approve</button>
-                                    </form>
-                                    <form class="d-inline-block status-form"  method="post" action="{% url 'product:product-approval' product.id %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="product_id" value="{{ product.id }}">
-                                        <input type="hidden" name="status" value="rejected">
-                                        <button type="submit" class="btn btn-sm btn-danger approval-btn">Reject</button>
-                                    </form>
-                                    {% elif product.status == 'approved' %}
-                                    <form class="d-inline-block status-form" method="post" action="{% url 'product:product-approval' product.id %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="product_id" value="{{ product.id }}">
-                                        <input type="hidden" name="status" value="draft">
-                                        <button type="submit" class="btn btn-sm btn-warning approval-btn">Draft</button>
-                                    </form>
-                                    <!-- <form class="d-inline-block status-form" method="post" action="{% url 'product:product-approval' product.id %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="product_id" value="{{ product.id }}">
-                                        <input type="hidden" name="status" value="rejected">
-                                        <button type="submit" class="btn btn-sm btn-danger approval-btn">Reject</button>
-                                    </form> -->
-                                    {% elif product.status == 'rejected' %}
-                                    <form class="d-inline-block status-form" method="post" action="{% url 'product:product-approval' product.id %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="product_id" value="{{ product.id }}">
-                                        <input type="hidden" name="status" value="draft">
-                                        <button type="submit" class="btn btn-sm btn-warning approval-btn">Draft</button>
-                                    </form>
-                                    <!-- <form class="d-inline-block status-form" method="post" action="{% url 'product:product-approval' product.id %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="product_id" value="{{ product.id }}">
-                                        <input type="hidden" name="status" value="approved">
-                                        <button type="submit" class="btn btn-sm btn-success approval-btn">Approve</button>
-                                    </form> -->
-                                    {% endif %}</td>
-                                {% endif %}
-                                <td class="cell text-center">
-                                    <a class="btn btn-sm action-btn" href="{% url 'product:product-detail' product.id %}"><i class="fa-solid fa-eye"></i>View</a>
-                                    <a class="btn btn-sm action-btn" href="{% url 'product:product-update' product.id %}"><i class="fa-solid fa-pencil"></i>Edit</a>
-                                    <a class="btn btn-sm action-btn" href="{% url 'product:product-delete' product.id %}" ><i class="fa-solid fa-trash"></i>Delete</a>
-                               
-                                </td>
-                            </tr>
-                            {% endfor %}
-                            
-                        </tbody>
-                    </table>
+                                    <tr>
+                                        <td class="cell">{{ product.title }}</td>
+                                        <td class="cell text-center">{{ product.category.name }}</td>
+                                        <td class="cell text-center">{{ product.price }}</td>
+                                        <td class="cell text-center">
+
+                                            {% if product.status == 'draft' %}
+                                            <span class="badge rounded-pill px-2 py-1  text-bg-warning">Pending</span>
+                                            {% elif product.status == 'approved' %}
+                                            <span class="badge rounded-pill px-2 py-1  text-bg-success">Approved</span>
+                                            {% elif product.status == 'rejected' %}
+                                            <span class="badge rounded-pill px-2 py-1  text-bg-danger">Rejected</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="cell text-center">{{ product.created_at }}</td>
+                                        <td class="cell text-center">{{ product.updated_at }}</td>
+                                        <td class="cell text-center">{{ product.created_by.email }}</td>
+                                        <td class="cell text-center">{{ product.description }}</td>
+                                        {% if user.role in 'admin,staff' %}
+
+                                        <td class="cell text-center">
+                                            <form class="d-inline-block status-form" method="post"
+                                                action="{% url 'product:product-approval' product.id %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                                <input type="hidden" name="status" value="approved">
+                                                <button type="submit"
+                                                    class="btn btn-sm  btn-outline-primary ">Approve</button>
+                                            </form>
+                                            <form class="d-inline-block status-form" method="post"
+                                                action="{% url 'product:product-approval' product.id %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="product_id" value="{{ product.id }}">
+                                                <input type="hidden" name="status" value="rejected">
+                                                <input type="hidden" name="rejection_reason" class="rejection-reason-field">
+                                                <button type="button"
+                                                    class="btn btn-sm  btn-outline-primary reject-btn">Reject</button>
+                                            </form>
+                                        </td>
+                                        {% endif %}
+                                        <td class="cell text-center">
+                                            <a class="btn btn-sm action-btn"
+                                                href="{% url 'product:product-detail' product.id %}"><i
+                                                    class="fa-solid fa-eye"></i>View</a>
+                                            <a class="btn btn-sm action-btn"
+                                                href="{% url 'product:product-update' product.id %}"><i
+                                                    class="fa-solid fa-pencil"></i>Edit</a>
+                                            <a class="btn btn-sm action-btn"
+                                                href="{% url 'product:product-delete' product.id %}"><i
+                                                    class="fa-solid fa-trash"></i>Delete</a>
+                                        </td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="approved" role="tabpanel">
+                <div class="card app-card app-card-orders-table shadow-sm mb-5">
+                    <div class="card-body app-card-body">
+                        <div class="table-responsive">
+                            <table class="table app-table-hover mb-0 text-left text-nowrap table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="cell">Title</th>
+                                        <th class="cell text-center">Category</th>
+                                        <th class="cell text-center">Price</th>
+                                        <th class="cell text-center">Status</th>
+                                        <th class="cell text-center">Created At</th>
+                                        <th class="cell text-center">Updated At</th>
+                                        <th class="cell text-center">Created By</th>
+                                        <th class="cell text-center">Description</th>
+                                        <th class="cell text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product in products %}
+                                    {% if product.status == 'approved' %}
+                                    <tr>
+                                        <td class="cell">{{ product.title }}</td>
+                                        <td class="cell text-center">{{ product.category.name }}</td>
+                                        <td class="cell text-center">{{ product.price }}</td>
+                                        <td class="cell text-center">
+
+                                            {% if product.status == 'draft' %}
+                                            <span class="badge rounded-pill px-2 py-1  text-bg-warning">Pending</span>
+                                            {% elif product.status == 'approved' %}
+                                            <span class="badge rounded-pill px-2 py-1  text-bg-success">Approved</span>
+                                            {% elif product.status == 'rejected' %}
+                                            <span class="badge rounded-pill px-2 py-1  text-bg-danger">Rejected</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="cell text-center">{{ product.created_at }}</td>
+                                        <td class="cell text-center">{{ product.updated_at }}</td>
+                                        <td class="cell text-center">{{ product.created_by.email }}</td>
+                                        <td class="cell text-center">{{ product.description }}</td>
+
+                                        <td class="cell text-center">
+                                            <a class="btn btn-sm action-btn"
+                                                href="{% url 'product:product-detail' product.id %}"><i
+                                                    class="fa-solid fa-eye"></i>View</a>
+                                            <!-- <a class="btn btn-sm action-btn" href="{% url 'product:product-update' product.id %}"><i class="fa-solid fa-pencil"></i>Edit</a>
+                                             <a class="btn btn-sm action-btn" href="{% url 'product:product-delete' product.id %}" ><i class="fa-solid fa-trash"></i>Delete</a> -->
+                                        {% if user.role == 'admin' %}
+                                        <a class="btn btn-sm action-btn" href="{% url 'product:product-delete' product.id %}" ><i class="fa-solid fa-trash"></i>Delete</a>
+                                        {% endif %}
+                                    </td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="rejected" role="tabpanel">
+                <div class="card app-card app-card-orders-table shadow-sm mb-5">
+                    <div class="card-body app-card-body">
+                        <div class="table-responsive">
+                            <table class="table app-table-hover mb-0 text-left text-nowrap table-bordered">
+                                <table class="table app-table-hover mb-0 text-left text-nowrap table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="cell">Title</th>
+                                            <th class="cell text-center">Category</th>
+                                            <th class="cell text-center">Price</th>
+                                            <th class="cell text-center">Status</th>
+                                            <th class="cell text-center">Created At</th>
+                                            <th class="cell text-center">Updated At</th>
+                                            <th class="cell text-center">Created By</th>
+                                            <th class="cell text-center">Description</th>
+                                            <th class="cell text-center">Rejection Reason</th>
+                                            <!-- {% if user.role in 'admin,staff' %}
+                                            <th class="cell text-center">Approval</th>
+                                            {% endif %} -->
+                                            <th class="cell text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for product in products %}
+                                        {% if product.status == 'rejected' %}
+                                        <tr>
+                                            <td class="cell">{{ product.title }}</td>
+                                            <td class="cell text-center">{{ product.category.name }}</td>
+                                            <td class="cell text-center">{{ product.price }}</td>
+                                            <td class="cell text-center">
+                                                {% if product.status == 'draft' %}
+                                                <span
+                                                    class="badge rounded-pill px-2 py-1  text-bg-warning">Pending</span>
+                                                {% elif product.status == 'approved' %}
+                                                <span
+                                                    class="badge rounded-pill px-2 py-1  text-bg-success">Approved</span>
+                                                {% elif product.status == 'rejected' %}
+                                                <span
+                                                    class="badge rounded-pill px-2 py-1  text-bg-danger">Rejected</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="cell text-center">{{ product.created_at }}</td>
+                                            <td class="cell text-center">{{ product.updated_at }}</td>
+                                            <td class="cell text-center">{{ product.created_by.email }}</td>
+                                            <td class="cell text-center">{{ product.description }}</td>
+                                            <td class="cell text-center">{{ product.rejection_reason}}</td>
+                                            <!-- {% if user.role in 'admin,staff' %}
+                                            <td class="cell text-center">
+                                                <form class="d-inline-block status-form" method="post"
+                                                    action="{% url 'product:product-approval' product.id %}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                                    <input type="hidden" name="status" value="draft">
+                                                    <button type="submit" class="btn btn-sm  btn-outline-primary">Reset
+                                                        as a Draft</button>
+                                                </form>
+                                            </td>
+                                            {% endif %} -->
+                                            <td class="cell text-center">
+                                                <a class="btn btn-sm action-btn"
+                                                    href="{% url 'product:product-detail' product.id %}"><i
+                                                        class="fa-solid fa-eye"></i>View</a>
+                                                <a class="btn btn-sm action-btn"
+                                                    href="{% url 'product:product-update' product.id %}"><i
+                                                        class="fa-solid fa-pencil"></i>Edit</a>
+                                                <a class="btn btn-sm action-btn"
+                                                    href="{% url 'product:product-delete' product.id %}"><i
+                                                        class="fa-solid fa-trash"></i>Delete</a>
+
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -152,41 +302,40 @@
                 </span>
             </li>
             {% endif %}
-    
+
             {% for num in page_obj.paginator.page_range %}
             {% if page_obj.number == num %}
             <li class="page-item active" aria-current="page">
                 <span class="page-link">{{ num }}</span>
             </li>
-            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-            <li class="page-item">
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <li class="page-item">
                 <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-            </li>
-            {% endif %}
-            {% endfor %}
-    
-            {% if page_obj.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
-                    <span aria-hidden="true">&rsaquo;</span>
-                    <span class="visually-hidden">Next</span>
-                </a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
-                    <span aria-hidden="true">&raquo;</span>
-                    <span class="visually-hidden">Last</span>
-                </a>
-            </li>
-            {% else %}
-            <li class="page-item disabled">
-                <span class="page-link" aria-disabled="true">
-                    <span aria-hidden="true">&rsaquo;</span>
-                    <span class="visually-hidden">Next</span>
-                </span>
-            </li>
-            {% endif %}
-            
+                </li>
+                {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&rsaquo;</span>
+                        <span class="visually-hidden">Next</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="visually-hidden">Last</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link" aria-disabled="true">
+                        <span aria-hidden="true">&rsaquo;</span>
+                        <span class="visually-hidden">Next</span>
+                    </span>
+                </li>
+                {% endif %}
+
     </nav>
 
 </div>
@@ -198,52 +347,82 @@
 {% block js %}
 <script>
 
-$(document).ready(function() {
-    $('.status-form').submit(function(event) {
-        event.preventDefault(); // Prevent the default form submission
+    $(document).ready(function () {
 
-        var form = $(this);
-        var formData = form.serialize(); // Serialize form data
 
-        $.ajax({
-            url: form.attr('action'),
-            method: 'POST',
-            data: formData,
-            success: function(response) {
-                console.log("<>>>>>>>>>>>", response.status)
-                let title, text, icon;
-                if (response.status === 'approved') {
-                    title = 'Success!';
-                    text = 'Product has been approved and created successfully.';
-                    icon = 'success';
-                } else if (response.status === 'draft') {
-                    title = 'Draft Saved';
-                    text = 'Product has been saved as a draft.';
-                    icon = 'info';
-                } else if (response.status === 'rejected') {
-                    title = 'Rejected';
-                    text = 'Product was rejected.';
-                    icon = 'error';
+        $('.reject-btn').click(function () {
+        var form = $(this).closest('form');
+
+        Swal.fire({
+            title: 'Reject Product',
+            input: 'textarea',
+            inputLabel: 'Rejection Reason',
+            inputPlaceholder: 'Enter your reason for rejection...',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'You need to provide a reason!'
                 }
-                Swal.fire({
-                    title: title,
-                    text: text,
-                    icon: icon,
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    window.location.href = '/product/';
-                });
             },
-            error: function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'An unexpected error occurred.',
-                });
+            showCancelButton: true,
+            confirmButtonText: 'Reject',
+            cancelButtonText: 'Cancel',
+            icon: 'warning',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.find('.status-field').val('rejected');
+                form.find('.rejection-reason-field').val(result.value);
+                form.submit();
             }
         });
+        });
+
+        $('.status-form').submit(function (event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            var form = $(this);
+            var formData = form.serialize(); // Serialize form data
+
+            $.ajax({
+                url: form.attr('action'),
+                method: 'POST',
+                data: formData,
+                success: function (response) {
+                    console.log("<>>>>>>>>>>>", response.status)
+                    let title, text, icon;
+                    if (response.status === 'approved') {
+                        title = 'Success!';
+                        text = 'Product has been approved and created successfully.';
+                        icon = 'success';
+                    } else if (response.status === 'draft') {
+                        title = 'Draft Saved';
+                        text = 'Product has been saved as a draft.';
+                        icon = 'info';
+                    } else if (response.status === 'rejected') {
+                        title = 'Rejected';
+                        text = 'Product was rejected.';
+                        icon = 'error';
+                    }
+                    Swal.fire({
+                        title: title,
+                        text: text,
+                        icon: icon,
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.href = '/product/';
+                    });
+                },
+                error: function (errors) {
+                    console.log("error=======", errors)
+                    var error = JSON.parse(errors.responseText);
+                    Swal.fire({
+                        icon: 'error',
+                        title: error.error,
+                        // text: 'An unexpected error occurred.',
+                    });
+                }
+            });
+        });
     });
-});
 
 </script>
 {% endblock js %}

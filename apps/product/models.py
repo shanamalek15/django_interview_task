@@ -30,7 +30,9 @@ def validate_video_size(value):
         if value.size > limit:
             print('>>>>>>>>>>>>>>>>: ', value.size)
             raise ValidationError('Video file is too large. Maximum size is 20MB.')
- 
+    else:
+        raise ValidationError("Only video files are allowed.")
+
 class Product(models.Model):
     category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
@@ -46,9 +48,17 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     video = models.FileField(upload_to='videos/', null=True, blank=True, validators=[validate_video_size])
+    rejection_reason = models.TextField(blank=True)  # New field for rejection reason
 
     class Meta:
         verbose_name_plural = "Products"
 
     def __str__(self) :
         return self.title
+    
+    def save(self, *args, **kwargs):
+        print("<>>>>>>>>>>>>", self.pk)
+        if self.pk is None and self.created_by.role == 'admin':
+            print(' self.created_by.role: ',  self.created_by.role)
+            self.status = 'approved'
+        super().save(*args, **kwargs)

@@ -52,6 +52,7 @@
             </div>
         </div>
     </div>
+    
 </div>
 
 
@@ -92,7 +93,7 @@
                 method: 'POST',
                 // data: JSON.stringify({ data: encryptedData }), // Sending encrypted data
                 // data: JSON.stringify({ data: jsonData }), // Sending encrypted data
-                data: JSON.stringify(jsonData), // Sending encrypted data
+                data: JSON.stringify({data: jsonData}), // Sending encrypted data
                 contentType: "application/json",
                 headers: {
                     'X-CSRFToken': csrfToken
@@ -138,19 +139,21 @@
             $.ajax({
                 url: '/product/decryption/',
                 method: 'POST',
-                // data: JSON.stringify({ data: ciphertext }),
-                data: JSON.stringify(ciphertext),
+                data: JSON.stringify({ data: ciphertext }),
+                // data: JSON.stringify(ciphertext),
                 contentType: "application/json",
                 headers: {
                     'X-CSRFToken': csrfToken
                 },
                 success: function (response) {
+                    var data = JSON.parse(response.data);
+                    console.log('response: ', data)
                     if (response.success) {
                         Swal.fire({
                             icon: 'success',
                             title: 'Success',
-                            text: `Data decrypted : \n Name : ${response.data.name}
-                            \n Title : ${response.data.title}\n \n Number : ${response.data.number}`,
+                            text: `Data decrypted : \n Name : ${data.name}
+                            \n Title : ${data.title}\n \n Number : ${data.number}`,
                         
                         })
                         $('.decryption-form')[0].reset()

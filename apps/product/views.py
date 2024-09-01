@@ -86,12 +86,9 @@ class ProductListView(LoginRequiredMixin, ListView):
         if user.role == 'admin':
             return Product.objects.all().order_by('id')
         elif user.role == 'staff':
-            # Staff can see their own products and products created by agents
-            return Product.objects.filter( Q(created_by__role='agent')
-                                          | Q(created_by__role='admin') 
-                                          | Q(created_by=user)).order_by('id')
+            return Product.objects.filter(created_by__role='agent').order_by('id') | Product.objects.filter(created_by=user).order_by('id')
         else:  # For agents
-            return Product.objects.filter(Q(created_by=user) | Q(created_by__role='admin')).order_by('id')
+            return Product.objects.filter(created_by=user).order_by('id')
     
 class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
@@ -103,7 +100,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.created_by = self.request.user
         # Set the product status based on the user's role
-        if self.request.user.role in ['admin', 'staff']:
+        if self.request.user.role in ['admin']:
             form.instance.status = 'approved'
         else:
             form.instance.status = 'draft'
@@ -139,11 +136,7 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('product:product-list')
 
     def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        # Set the product status based on the user's role
-        if self.request.user.role in ['admin', 'staff']:
-            form.instance.status = 'approved'
-        else:
+        if form.instance.status == 'rejected':
             form.instance.status = 'draft'
         product = form.save()
         video_file = self.request.FILES.get('video')
@@ -231,14 +224,21 @@ class ProductApprovalView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         product_id = request.POST.get('product_id')
         new_status = request.POST.get('status')
-        
+        rejection_reason = request.POST.get('rejection_reason', '')
+
         product = get_object_or_404(Product, id=product_id)
+        print('product: ', product)
+        print("Request user", request.user.role)
+        if request.user.role == 'staff' and product.created_by == request.user:
+            return JsonResponse({'success': False, 'error': 'Only Officer allow for Rejection/Approval'}, status=400)
         
         if new_status in dict(Product.upload_status).keys():
+            if new_status == 'rejected':
+                product.rejection_reason = rejection_reason
             product.status = new_status
             product.save()
-            return JsonResponse({'success': True, 'status': new_status})
-        return JsonResponse({'success': False, 'error': 'Invalid status'})
+            return JsonResponse({'success': True, 'status': new_status}, status=200)
+        return JsonResponse({'success': False, 'error': 'Invalid status'}, status=400)
     
     
 class EncryptionView(View):
@@ -269,15 +269,19 @@ def decrypt_aes(encrypted_data, key):
         return None
 
 class EncryptionFormView(View):
-    
     def post(self, request):
         try:
-            print("TYPE OF ",request.body, type(request.body))
-            data =  json.loads(request.body)
-            print('data: ', data)
-            key = base64.b64decode("bXVzdGJlMTZieXRlc2tleQ==") 
-            encrypted_data = encrypt_aes(data, key)
-            print('encrypted_data: ', encrypted_data)
+            # Convert request body to a Python dictionary
+            data = json.loads(request.body).get('data')
+            print('Received data:', data)  # Check if data is received correctly
+            
+            # Convert dictionary to JSON string for encryption
+            data_str = json.dumps(data)
+            
+            key = base64.b64decode("bXVzdGJlMTZieXRlc2tleQ==")  # Your key
+            encrypted_data = encrypt_aes(data_str, key)  # Encrypt the JSON string
+            
+            print('Encrypted data:', encrypted_data)
             if encrypted_data is None:
                 return JsonResponse({'success': False, 'error': 'Encryption failed'})
 
@@ -293,7 +297,7 @@ class DecryptionFormView(View):
     def post(self, request):
         try:
             # encrypted_data = json.loads(request.body).get('data')
-            encrypted_data = json.loads(request.body)
+            encrypted_data = json.loads(request.body).get('data')
             print('encrypted_data: ', encrypted_data)
             key = base64.b64decode("bXVzdGJlMTZieXRlc2tleQ==")  # Replace with your Base64 encoded key
             decrypted_data = decrypt_aes(encrypted_data, key)
@@ -312,3 +316,17 @@ class DecryptionFormView(View):
 class ProductGenericListCreateAPIView(ListCreateAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
+    
+class ProductEncryptionView(LoginRequiredMixin, ListView):
+    model = Product
+    template_name = 'product_encyption_view.html'
+    context_object_name = 'products'
+    paginate_by = 10
+        
+    
+class ProductGetApiEncrypt(View):
+    
+    def post(self, request, data):
+        pass
+        
+        

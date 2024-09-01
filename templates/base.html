@@ -72,7 +72,7 @@
 						{% if user.role in 'admin,staff,agent' %}
 						<li class="nav-item">
 
-							<a class="nav-link active" href="{% url 'product:product-list' %}">
+							<a class="nav-link" href="{% url 'product:product-list' %}">
 								<span class="nav-icon">
 
 								</span>
@@ -84,7 +84,7 @@
 
 						<li class="nav-item">
 
-							<a class="nav-link active" href="{% url 'product:category-list' %}">
+							<a class="nav-link" href="{% url 'product:category-list' %}">
 								<span class="nav-icon">
 
 								</span>
@@ -96,7 +96,7 @@
 
 						<li class="nav-item">
 
-							<a class="nav-link active" href="{% url 'authentication:user-list' %}">
+							<a class="nav-link " href="{% url 'authentication:user-list' %}">
 								<span class="nav-icon">
 
 								</span>
@@ -105,18 +105,24 @@
 						</li>
 						<li class="nav-item">
 
-							<a class="nav-link active" href="{% url 'product:generate-dummy-products' %}">
+							<a class="nav-link " href="{% url 'product:generate-dummy-products' %}">
 								<span class="nav-icon">
 
 								</span>
 								<span class="nav-link-text">Generate Products</span>
 							</a>
 
-							<a class="nav-link active" href="{% url 'product:encryption-form' %}">
+							<a class="nav-link " href="{% url 'product:encryption-form' %}">
 								<span class="nav-icon">
 
 								</span>
 								<span class="nav-link-text">Encryption Form</span>
+							</a>
+							<a class="nav-link " href="{% url 'product:product-encryption-view' %}">
+								<span class="nav-icon">
+
+								</span>
+								<span class="nav-link-text">Product Encryption</span>
 							</a>
 						</li>
 						{% endif %}

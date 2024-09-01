@@ -7784,12 +7784,12 @@ fieldset:disabled .btn {
 }
 
 .text-bg-success {
-    color: #000 !important;
+    color: #ffffff !important;
     background-color: RGBA(92, 179, 119, var(--bs-bg-opacity, 1)) !important
 }
 
 .text-bg-danger {
-    color: #000 !important;
+    color: #ffffff !important;
     background-color: RGBA(210, 109, 105, var(--bs-bg-opacity, 1)) !important
 }
 
@@ -13960,7 +13960,7 @@ button.close:focus {
     font-weight: 600;
     padding: .5rem 1rem;
     font-size: .875rem;
-    border: none
+    /* border: none */
 }
 
 .btn:hover,

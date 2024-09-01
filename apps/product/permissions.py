@@ -23,7 +23,6 @@ def can_update_delete_category_view(view):
             return redirect(settings.LOGIN_URL)  
         obj = get_object_or_404(Category, pk=kwargs["pk"])
         user_role = request.user.role
-        
         if user_role == 'admin':
             return view(request, *args, **kwargs)
         elif user_role == 'staff':

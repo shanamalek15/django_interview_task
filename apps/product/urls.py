@@ -26,6 +26,9 @@ urlpatterns = [
     path('decryption/', DecryptionFormView.as_view(), name='decryption'),
     # encryption-decryption api 
     path('product-api/', ProductGenericListCreateAPIView.as_view(), name='prodcut-api'),
+    path('product-encryption-view/', ProductEncryptionView.as_view(), name='product-encryption-view'),
+    
+    path('product-get-encrypt/<int:pk>/', ProductGetApiEncrypt.as_view(), name='prodcut-api-get-encrypt'),
 
 ]
 

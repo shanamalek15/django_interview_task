@@ -30,3 +30,50 @@
     font-size: 10px !important;
     color: #ffff;
 }
+
+
+
+.encryptdata {
+    word-wrap: break-word; /* Ensures long words break and wrap to the next line */
+    overflow-wrap: break-word; /* For compatibility with older browsers */
+}
+
+#myTab .nav-item .nav-link{
+    background: white;
+    color: #545050;
+    box-shadow: 2px 1px 4px 1px #e5dfdf;
+    font-weight: bold;
+}
+
+
+#myTab .nav-item .nav-link.active{
+    background: #8583f2;
+    color: #ffffff;
+    box-shadow: 2px 1px 4px 1px #e5dfdf;
+}
+
+.nav-item .nav-link{
+    background: white;
+    color: #545050;
+    box-shadow: 2px 1px 4px 1px #e5dfdf;
+    font-weight: bold;
+    /* border-left: 4px solid #8583f2; */
+    /* border-right: 4px solid #8583f2; */
+    margin-bottom: 2px;
+}
+
+.app-branding {
+    background: #8583f2;
+    height: 60px;
+    padding-top: 1rem;
+    padding-left: 0 !important;
+    margin-bottom: 1rem;
+    color: white !important;
+}
+
+.app-branding .logo-text {
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 600;
+    vertical-align: middle;
+}
