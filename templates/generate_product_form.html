@@ -11,7 +11,7 @@
         <div class="col-md-8">
             <div class="app-card app-card-settings shadow-sm p-4">
                 <div class="app-card-body">
-                    <form method="post"  class="settings-form">
+                    <form method="post"  class="settings-form" action="{% url 'product:generate-dummy-products' %}" id="dummy-product-form">
                         {% csrf_token %}
                         
                         <!-- Category Field -->
@@ -39,6 +39,51 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block js %}
+<script>
+$(document).ready(function() {
+    $('#dummy-product-form').on('submit', function(event) {
+        event.preventDefault();  // Prevent default form submission
 
+        // Prepare form data
+        var formData = $(this).serialize();
+
+        // AJAX request
+        $.ajax({
+            type: 'POST',
+            url: $(this).attr('action'),
+            data: formData,
+            success: function(response) {
+                console.log("response=============", response)
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: response.message,
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: response.message,
+                        confirmButtonText: 'OK'
+                    });
+                }
+                $('#dummy-product-form')[0].reset()
+            },
+            error: function() {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops!',
+                    text: 'Something went wrong. Please try again later.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

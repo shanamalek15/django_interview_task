@@ -17,13 +17,14 @@
 
 <div class="card m-2">
     <div id="product-{{product.id}}" class="row card-body">
-        <div class="col-md-4">
+        <div class="col-md-4 data-enc">
             <div class="title">Name:{{product.title}}</div>
             <div class="category">Category:{{ product.category.name }}</div>
             <div class="price">Price:{{ product.price }}</div>
             <div class="status">Status:{{product.status}}</div>
             <button class="btn btn-primary encrypt-btn">Encrypt</button>
             <button class="btn  btn-primary decrypt-btn" > Decrypt</button>
+            <button class="btn  btn-primary reset-btn" > Reset</button>
         </div>
         <div class="col-md-3" >
             <strong> Encrypted Data:</strong>
@@ -123,16 +124,19 @@
             return cookieValue;
         }
     const csrftoken = getCookie('csrftoken');
+
         // Encrypt button click event
         $('.encrypt-btn').click(function() {
             var productDiv = $(this).closest('.row');
             productDiv.find('.encryptdata').text('')
+            console.log("productDiv.find('.encryptdata')", productDiv)
             var productData = {
-                title: productDiv.find('.title').text().replace('Name:', '').trim(),
-                category: productDiv.find('.category').text().replace('Category:', '').trim(),
-                price: productDiv.find('.price').text().replace('Price:', '').trim(),
-                status: productDiv.find('.status').text().replace('Status:', '').trim(),
+                title: productDiv.find('.data-enc .title').text().replace('Name:', '').trim(),
+                category: productDiv.find('.data-enc .category').text().replace('Category:', '').trim(),
+                price: productDiv.find('.data-enc .price').text().replace('Price:', '').trim(),
+                status: productDiv.find('.data-enc .status').text().replace('Status:', '').trim(),
             };
+            console.log("productData", productData)
             $.ajax({
                 url: '/product/encryption/',  // Ensure this URL matches your Django view URL
                 method: 'POST',

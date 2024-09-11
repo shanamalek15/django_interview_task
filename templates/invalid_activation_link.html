@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+<style>
+     .app-wrapper {
+          margin-left : 0px !important
+     }
+</style>
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="alert alert-danger">
+        <h4 class="alert-heading">Invalid Activation Link</h4>
+        <p>The activation link you used is invalid or has expired.</p>
+    </div>
+    <form method="post" action="{% url 'authentication:resend_activation' %}">
+        {% csrf_token %}
+        <input type="hidden" name="uidb64" value="{{ uidb64 }}">
+        <button type="submit" class="btn btn-primary">Resend Activation Link</button>
+    </form>
+</div>
+{% endblock %}

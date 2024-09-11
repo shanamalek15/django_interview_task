@@ -78,32 +78,6 @@ class UserSignInView(FormView):
         return self.render_to_response(self.get_context_data(form=form))
     
     
-    
-class UserActivationConfirmView(View):
-
-    def get(self, request, uidb64, token):
-        print("uidb64", token, uidb64)
-        try:  
-            uid = urlsafe_base64_decode(uidb64).decode()
-            print('uid: ', uid)
-            user = User.objects.get(pk=int(uid))
-            print('user: ', user)
-            print('user: ', user)
-        except(TypeError, ValueError, OverflowError, User.DoesNotExist):  
-            user = None
-            return HttpResponse("Link Invalid")
-        if user is not None and account_activation_token.check_token(user, token):  
-            user.is_active = True  
-            user.save()  
-            messages.success(request, 'Your account has been activated. You can now log in.')
-            return redirect(reverse_lazy('authentication:signin'))
-        else:
-            messages.error(request, 'Activation link is invalid.')
-        # except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            messages.error(request, 'Activation link is invalid.')
-        return HttpResponse("Link Invalid")
-    
-    
 class UserListView(AdminRequiredMixin, LoginRequiredMixin, ListView):
     model = User
     template_name = 'users_list.html'
@@ -133,3 +107,71 @@ class UserDeleteView(AdminRequiredMixin,LoginRequiredMixin, DeleteView):
     model = User
     template_name = 'user_confirm_delete.html'
     success_url = reverse_lazy('authentication:user-list')
+    
+    
+    
+class UserActivationConfirmView(View):
+    
+    def get(self, request, uidb64, token):
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            print('uid: ', uid)
+            user = User.objects.get(pk=uid)
+            print('user: ', user)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None and account_activation_token.check_token(user, token):
+            print('user: ', user)
+            if user.is_active:
+                messages.error(request, 'Your account has already been verified. Please log in.')
+                return redirect('authentication:signin')
+            else:
+                # Activate the user
+                user.is_active = True
+                user.save()
+                messages.success(request, 'Your account has been activated. You can now log in.')
+                return redirect('authentication:signin')
+        else:
+            # Render the invalid link template with an option to resend the activation link
+            return render(request, 'invalid_activation_link.html', {'uidb64': uidb64})
+
+
+
+class ResendActivationLinkView(View):
+    def post(self, request):
+        uidb64 = request.POST.get('uidb64')
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+            messages.error(request, 'Invalid user. Please try again.')
+            return redirect('authentication:signup')
+
+        if user and not user.is_active:
+            print('user: ', user)
+            # Resend the activation link
+            current_site = get_current_site(request)
+            mail_subject = 'Activate your account'
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = account_activation_token.make_token(user)
+            activation_link = request.build_absolute_uri(reverse('authentication:user-activation', 
+                        kwargs={'uidb64': uid, 'token': token}))
+            print("activation_link, ", activation_link)
+            message = render_to_string('account_activation_mail.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'activation_link': activation_link,
+            })
+            from_email = settings.EMAIL_HOST_USER
+            email = EmailMessage(mail_subject, message, from_email, to=[user.email])
+            email.content_subtype = 'html'
+            email.send()
+
+            messages.success(request, 'A new activation link has been sent to your email.')
+            return redirect('authentication:activation_sent')
+
+        else:
+            messages.error(request, 'The user is already active or invalid.')
+            return redirect('authentication:signup')

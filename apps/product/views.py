@@ -211,13 +211,23 @@ class GenerateDummyProductsView(LoginRequiredMixin, FormView):
     form_class = DummyProductForm
     success_url = reverse_lazy('product:product-list')
     
-    
     def form_valid(self, form):
         num_products = form.cleaned_data['num_of_products']
         user_id = self.request.user.id
         generate_dummy_products_data.delay(num_products, user_id)
-        messages.success(self.request, f'Started generating {num_products} dummy products.')
-        return super().form_valid(form)
+
+        # Return a JSON response for AJAX
+        return JsonResponse({
+            'success': True,
+            'message': f'Started generating {num_products} dummy products.'
+        })
+
+    def form_invalid(self, form):
+        # Return errors as JSON
+        return JsonResponse({
+            'success': False,
+            'message': form.errors.as_json()
+        })
     
 @method_decorator(can_give_approval_product, name='dispatch')
 class ProductApprovalView(LoginRequiredMixin, View):

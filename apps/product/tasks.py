@@ -22,7 +22,7 @@ def generate_dummy_products_data(no_of_products, user_id):
     print('category: ', category)
     for _ in range(no_of_products):
         prod_name = ''.join(random.choices(string.ascii_uppercase, k=5))
-        price = random.randrange(1.00, 10000.00)
+        price = round(random.uniform(1.00, 10000.00), 2)
         product = Product.objects.create(
             category_id = category.id,
             title = prod_name,
