@@ -50,6 +50,14 @@ class Product(models.Model):
     video = models.FileField(upload_to='videos/', null=True, blank=True, validators=[validate_video_size])
     rejection_reason = models.TextField(blank=True)  # New field for rejection reason
 
+
+    approved_by = models.ForeignKey(User, null=True, blank=True,
+                                    related_name='approved_products', on_delete=models.SET_NULL)
+    approved_at = models.DateTimeField(null=True, blank=True)
+    
+    rejected_by = models.ForeignKey(User, null=True, blank=True, 
+                                    related_name='rejected_products', on_delete=models.SET_NULL)
+    rejected_at = models.DateTimeField(null=True, blank=True)
     class Meta:
         verbose_name_plural = "Products"
 
@@ -59,6 +67,7 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         print("<>>>>>>>>>>>>", self.pk)
         if self.pk is None and self.created_by.role == 'admin':
-            print(' self.created_by.role: ',  self.created_by.role)
             self.status = 'approved'
         super().save(*args, **kwargs)
+    
+    

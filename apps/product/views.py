@@ -20,6 +20,7 @@ import os
 from .serializer import *
 from rest_framework.generics import ListCreateAPIView
 from django.db.models import Q
+from django.utils import timezone
 
 # Category Views
 @method_decorator(agent_restriction, name='dispatch')
@@ -231,20 +232,41 @@ class GenerateDummyProductsView(LoginRequiredMixin, FormView):
     
 @method_decorator(can_give_approval_product, name='dispatch')
 class ProductApprovalView(LoginRequiredMixin, View):
+    
     def post(self, request, *args, **kwargs):
         product_id = request.POST.get('product_id')
         new_status = request.POST.get('status')
         rejection_reason = request.POST.get('rejection_reason', '')
+        
 
         product = get_object_or_404(Product, id=product_id)
+        product.approved_by = None  # Clear approval details
+        product.approved_at = None
+        product.rejected_by = None  # Clear rejection details
+        product.rejected_at = None
         print('product: ', product)
         print("Request user", request.user.role)
         if request.user.role == 'staff' and product.created_by == request.user:
             return JsonResponse({'success': False, 'error': 'Only Officer allow for Rejection/Approval'}, status=400)
         
         if new_status in dict(Product.upload_status).keys():
+            # Handle rejection
             if new_status == 'rejected':
+                if not rejection_reason:
+                    return JsonResponse({'success': False, 'error': 'Rejection reason is required'}, status=400)
                 product.rejection_reason = rejection_reason
+                product.rejected_by = request.user
+                product.rejected_at = timezone.now()
+                product.approved_by = None  # Reset approval if previously approved
+
+            # Handle approval
+            elif new_status == 'approved':
+                product.approved_by = request.user
+                product.approved_at = timezone.now()
+                product.rejected_by = None  # Reset rejection if previously rejected
+                product.rejection_reason = ''
+
+            # Update product status and save
             product.status = new_status
             product.save()
             return JsonResponse({'success': True, 'status': new_status}, status=200)
@@ -332,5 +354,43 @@ class ProductEncryptionView(LoginRequiredMixin, ListView):
     template_name = 'product_encyption_view.html'
     context_object_name = 'products'
     paginate_by = 10
+    
+    
+class ProductEncryptionAPI(LoginRequiredMixin, View):
+    
+    def get(self, request, *args, **kwargs):
+        # Retrieve all products
+        products = Product.objects.all()
         
+        # Prepare the data manually
+        product_list = []
+        for product in products:
+            product_data = {
+                'id': product.id,
+                'title': product.title,
+                'description': product.description,
+                'price': str(product.price),  # Convert Decimal to string
+                'status': product.status,
+                'created_at': product.created_at.isoformat(),  # ISO format for datetime
+                'updated_at': product.updated_at.isoformat(),
+                'created_by': product.created_by.email,  # Assuming `created_by` is a User object and you want username
+                'category_name': product.category.name,  # Include category name
+                'rejection_reason': product.rejection_reason or ''  # Handle empty rejection reason
+            }
+            product_list.append(product_data)
         
+        # Convert the product list to JSON string
+        product_json = json.dumps(product_list)
+        
+        # Encrypt the JSON string
+        key = base64.b64decode("bXVzdGJlMTZieXRlc2tleQ==")  # Your key (make sure it has a valid length)
+        encrypted_data = encrypt_aes(product_json, key)
+        # Return the encrypted data as a JSON response
+        return JsonResponse({'data': encrypted_data}, status=200)
+
+    
+    
+class  ProductList(View):
+        
+    def get(self, request):
+        return render(request, 'product_data_list.html')

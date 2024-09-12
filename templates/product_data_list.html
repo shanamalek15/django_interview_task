@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+<style>
+    .dataTables_wrapper .dataTables_paginate {
+        margin-top: 20px; 
+        margin-bottom: 20px; 
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Product List</h1>
+
+<div class="tab-content" id="orders-table-tab-content">
+    <!-- Tabs Navigation -->
+
+    <ul class="nav nav-tabs row" id="myTab" role="tablist">
+        <li class="nav-item  col-md-4  col-sm-4 col-xs-4">
+            <a class="nav-link active" id="draft-tab" data-bs-toggle="tab" href="#draft" role="tab">Pending</a>
+        </li>
+        <li class="nav-item  col-md-4 col-sm-4 col-xs-4">
+            <a class="nav-link" id="rejected-tab" data-bs-toggle="tab" href="#rejected" role="tab">Rejected</a>
+        </li>
+        <li class="nav-item  col-md-4 col-sm-4 col-xs-4">
+            <a class="nav-link " id="approved-tab" data-bs-toggle="tab" href="#approved" role="tab">Approved</a>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-2" id="myTabContent">
+        <div class="tab-pane fade show active" id="draft" role="tabpanel" aria-labelledby="draft-tab">
+            <div class="mt-2 card app-card app-card-orders-table shadow-sm mb-5">
+                <div class="card-body app-card-body">
+                    <div class="table-responsive">
+
+                        <table id="draftTable"
+                            class="display table app-table-hover mb-0 text-left text-nowrap table-bordered"
+                            style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th>Created At</th>
+                                    <th>Updated At</th>
+                                    <th>Created By</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="approved" role="tabpanel" aria-labelledby="approved-tab">
+            <div class="mt-2 card app-card app-card-orders-table shadow-sm mb-5">
+                <div class="card-body app-card-body">
+                    <div class="table-responsive">
+
+                        <table id="approvedTable"
+                            class="display table app-table-hover mb-0 text-left text-nowrap table-bordered"
+                            style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th>Created At</th>
+                                    <th>Updated At</th>
+                                    <th>Created By</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="rejected" role="tabpanel" aria-labelledby="rejected-tab">
+            <div class="mt-2 card app-card app-card-orders-table shadow-sm mb-5">
+                <div class="card-body app-card-body">
+                    <div class="table-responsive">
+                        <table id="rejectedTable"
+                            class="display table app-table-hover mb-0 text-left text-nowrap table-bordered"
+                            style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th>Created At</th>
+                                    <th>Updated At</th>
+                                    <th>Created By</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+
+<script>
+    function decryptData(encryptedData, key) {
+        // Convert base64 key to WordArray
+        const keyWordArray = CryptoJS.enc.Base64.parse(key);
+        const keyHex = CryptoJS.enc.Hex.stringify(keyWordArray);
+
+        // Decrypt using AES-ECB mode
+        const decrypted = CryptoJS.AES.decrypt(encryptedData, CryptoJS.enc.Hex.parse(keyHex), {
+            mode: CryptoJS.mode.ECB,
+            padding: CryptoJS.pad.Pkcs7
+        });
+        return decrypted.toString(CryptoJS.enc.Utf8);
+    }
+
+    $.get('/product/product-encryption-api/', function (response) {
+        const key = "bXVzdGJlMTZieXRlc2tleQ==";  // Base64 encoded key
+        const decryptedData = decryptData(response.data, key);
+        const products = JSON.parse(decryptedData);
+        // Initialize DataTable for Draft
+        $('#draftTable').DataTable({
+            data: products.filter(product => product.status === 'draft'),
+            columns: [
+                { data: 'title' },
+                { data: 'category_name' },
+                { data: 'description' },
+                { data: 'price' },
+                { data: 'status' },
+                { data: 'created_at' },
+                { data: 'updated_at' },
+                { data: 'created_by' },
+            ]
+        });
+
+        // Initialize DataTable for Approved
+        $('#approvedTable').DataTable({
+            data: products.filter(product => product.status === "approved"),
+            columns: [
+                { data: 'title' },
+                { data: 'category_name' },
+                { data: 'description' },
+                { data: 'price' },
+                { data: 'status' },
+                { data: 'created_at' },
+                { data: 'updated_at' },
+                { data: 'created_by' },
+            ]
+        });
+
+        // Initialize DataTable for Rejected
+        $('#rejectedTable').DataTable({
+            data: products.filter(product => product.status === 'rejected'),
+            columns: [
+                { data: 'title' },
+                { data: 'category_name' },
+                { data: 'description' },
+                { data: 'price' },
+                { data: 'status' },
+                { data: 'created_at' },
+                { data: 'updated_at' },
+                { data: 'created_by' },
+            ]
+        });
+    });
+
+</script>
+
+{% endblock %}

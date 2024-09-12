@@ -151,6 +151,7 @@
                                         <th class="cell text-center">Updated At</th>
                                         <th class="cell text-center">Created By</th>
                                         <th class="cell text-center">Description</th>
+                                        <th class="cell text-center">Approved By</th>
                                         <th class="cell text-center">Actions</th>
                                     </tr>
                                 </thead>
@@ -175,6 +176,7 @@
                                         <td class="cell text-center">{{ product.updated_at }}</td>
                                         <td class="cell text-center">{{ product.created_by.email }}</td>
                                         <td class="cell text-center">{{ product.description }}</td>
+                                        <td class="cell text-center">{{ product.approved_by.email|default:"" }}</td>
 
                                         <td class="cell text-center">
                                             <a class="btn btn-sm action-btn"
@@ -214,6 +216,8 @@
                                             <th class="cell text-center">Updated At</th>
                                             <th class="cell text-center">Created By</th>
                                             <th class="cell text-center">Description</th>
+                                            <th class="cell text-center">Reejected By</th>
+
                                             <th class="cell text-center">Rejection Reason</th>
                                             <!-- {% if user.role in 'admin,staff' %}
                                             <th class="cell text-center">Approval</th>
@@ -244,6 +248,8 @@
                                             <td class="cell text-center">{{ product.updated_at }}</td>
                                             <td class="cell text-center">{{ product.created_by.email }}</td>
                                             <td class="cell text-center">{{ product.description }}</td>
+                                            <td class="cell text-center">{{ product.rejected_by.email|default:"" }}</td>
+
                                             <td class="cell text-center">{{ product.rejection_reason}}</td>
                                             <!-- {% if user.role in 'admin,staff' %}
                                             <td class="cell text-center">
@@ -406,7 +412,7 @@
                             let title, text, icon;
                             if (response.status === 'approved') {
                                 title = 'Success!';
-                                text = 'Product has been approved and created successfully.';
+                                text = 'Product has been approved successfully.';
                                 icon = 'success';
                             } else if (response.status === 'draft') {
                                 title = 'Draft Saved';
@@ -414,14 +420,16 @@
                                 icon = 'info';
                             } else if (response.status === 'rejected') {
                                 title = 'Rejected';
-                                text = 'Product was rejected.';
+                                text = 'Product is rejected.';
                                 icon = 'error';
                             }
                             Swal.fire({
                                 title: title,
                                 text: text,
                                 icon: icon,
-                                confirmButtonText: 'OK'
+                                confirmButtonText: 'OK',
+                                showConfirmButton: false,
+                                timer: 1500,
                             }).then(() => {
                                 window.location.href = '/product/';
                             });
@@ -431,6 +439,7 @@
                             Swal.fire({
                                 icon: 'error',
                                 title: error.error,
+                                showConfirmButton: false,
                             });
                         }
                     });

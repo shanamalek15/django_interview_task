@@ -112,6 +112,12 @@
 								</span>
 								<span class="nav-link-text">Generate Products</span>
 							</a>
+							<a class="nav-link " href="{% url 'product:product-list-view' %}">
+								<span class="nav-icon">
+
+								</span>
+								<span class="nav-link-text">Product Encypted List</span>
+							</a>
 
 							<a class="nav-link " href="{% url 'product:encryption-form' %}">
 								<span class="nav-icon">
@@ -125,6 +131,7 @@
 								</span>
 								<span class="nav-link-text">Product Encryption</span>
 							</a>
+							
 						</li>
 						{% endif %}
 
@@ -161,7 +168,8 @@
 	<script src="{% static 'js/libs/sweetalert2.all.min.js' %}"></script>
 	<script src="{% static 'js/libs/jquery.min.js' %}"></script>
 	<script src="{% static 'js/base.js' %}"></script>
-
+	<script src="{% static  'js/libs/dataTables.min.js' %}"></script>
+    <script src="{% static  'js/libs/dataTables.bootstrap4.min.js' %}"></script>
 	{% block js %}
 	{% endblock %}
 

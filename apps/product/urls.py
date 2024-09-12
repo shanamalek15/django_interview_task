@@ -27,5 +27,7 @@ urlpatterns = [
     path('product-api/', ProductGenericListCreateAPIView.as_view(), name='prodcut-api'),
     path('product-encryption-view/', ProductEncryptionView.as_view(), name='product-encryption-view'),
     
+    path('product-encryption-api/', ProductEncryptionAPI.as_view(), name='product-encryption-api'),
+    path('list-products/', ProductList.as_view(), name='product-list-view'),  # This renders the HTML template
 ]
 

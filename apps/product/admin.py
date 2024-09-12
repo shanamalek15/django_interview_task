@@ -6,8 +6,8 @@ from .models import Category, Product
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('title', 'category', 'price', 'status', 'created_by', 'created_at', 'updated_at')
-    fields = ('category', 'title', 'description', 'price', 'status', 'video')
+    list_display = ('title', 'category', 'price', 'status', 'created_by', 'created_at', 'updated_at', 'approved_by', 'rejected_by')
+    fields = ('category', 'title', 'description', 'price', 'status', 'video', )
     readonly_fields = ('created_by', 'created_at', 'updated_at')
 
     def save_model(self, request, obj, form, change):
