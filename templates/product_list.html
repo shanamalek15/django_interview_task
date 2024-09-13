@@ -185,6 +185,7 @@
                                             <!-- <a class="btn btn-sm action-btn" href="{% url 'product:product-update' product.id %}"><i class="fa-solid fa-pencil"></i>Edit</a>
                                              <a class="btn btn-sm action-btn" href="{% url 'product:product-delete' product.id %}" ><i class="fa-solid fa-trash"></i>Delete</a> -->
                                             {% if user.role == 'admin' %}
+                                            <a class="btn btn-sm action-btn" href="{% url 'product:product-update' product.id %}"><i class="fa-solid fa-pencil"></i>Edit</a>
                                             <a class="btn btn-sm action-btn"
                                                 href="{% url 'product:product-delete' product.id %}"><i
                                                     class="fa-solid fa-trash"></i>Delete</a>
@@ -439,7 +440,7 @@
                             Swal.fire({
                                 icon: 'error',
                                 title: error.error,
-                                showConfirmButton: false,
+                                showConfirmButton: true,
                             });
                         }
                     });

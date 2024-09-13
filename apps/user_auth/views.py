@@ -20,6 +20,7 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.contrib.auth import get_user_model
 User = get_user_model()
+
 class UserSignupView(FormView):
     template_name = 'signup.html'
     form_class = SignupForm
@@ -175,3 +176,4 @@ class ResendActivationLinkView(View):
         else:
             messages.error(request, 'The user is already active or invalid.')
             return redirect('authentication:signup')
+    

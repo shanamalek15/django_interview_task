@@ -33,7 +33,7 @@ if env.bool("DJANGO_READ_DOT_ENV_FILE", default=True):
 SECRET_KEY = 'django-insecure-yr(v_!hl4sy-($(_r0kar(!ik#t0#-1hb$6l6sl301@+#@9oi0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("DEBUG")
+DEBUG = True
 
 ALLOWED_HOSTS = env("ALLOWED_HOSTS").split(',')
 

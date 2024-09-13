@@ -354,13 +354,24 @@ class ProductEncryptionView(LoginRequiredMixin, ListView):
     template_name = 'product_encyption_view.html'
     context_object_name = 'products'
     paginate_by = 10
-    
+
+
+def format_datetime(dt):
+    # Format datetime object to string
+    return dt.strftime('%b. %d, %Y, %I:%M %p')
     
 class ProductEncryptionAPI(LoginRequiredMixin, View):
     
     def get(self, request, *args, **kwargs):
         # Retrieve all products
         products = Product.objects.all()
+        user = self.request.user
+        if user.role == 'admin':
+           products = Product.objects.all().order_by('id')
+        elif user.role == 'staff':
+            products =  Product.objects.filter(created_by__role='agent').order_by('id') | Product.objects.filter(created_by=user).order_by('id')
+        else:  # For agents
+            products =  Product.objects.filter(created_by=user).order_by('id')
         
         # Prepare the data manually
         product_list = []
@@ -371,8 +382,8 @@ class ProductEncryptionAPI(LoginRequiredMixin, View):
                 'description': product.description,
                 'price': str(product.price),  # Convert Decimal to string
                 'status': product.status,
-                'created_at': product.created_at.isoformat(),  # ISO format for datetime
-                'updated_at': product.updated_at.isoformat(),
+                'created_at': format_datetime(product.created_at),  # ISO format for datetime
+                'updated_at': format_datetime(product.updated_at),
                 'created_by': product.created_by.email,  # Assuming `created_by` is a User object and you want username
                 'category_name': product.category.name,  # Include category name
                 'rejection_reason': product.rejection_reason or ''  # Handle empty rejection reason
